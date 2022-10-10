@@ -167,7 +167,7 @@
                         {{ row.consignment.user.name }}
                       </div>
                       <div>
-<!--                        {{ row.consignment.user.phone | cancelPhone }}-->
+                        <!--                        {{ row.consignment.user.phone | cancelPhone }}-->
                       </div>
                       <template v-if="row.status === 4">
                         <div v-show="row.intervene_user_id===row.consignment.user_id ">
@@ -199,7 +199,7 @@
                         {{ row.user.name }}
                       </div>
                       <div>
-<!--                        {{ row.user.phone | cancelPhone }}-->
+                        <!--                        {{ row.user.phone | cancelPhone }}-->
                       </div>
                       <template v-if="row.status === 4">
                         <div v-show="row.intervene_user_id===row.user.id">
@@ -289,8 +289,8 @@
         </el-table-column>
         <el-table-column width="200" fixed="right" align="center">
           <template slot-scope="{ row }">
-<!--            <el-button v-show="[4].includes(row.status)" type="primary" @click="onIntervene(row)">平台介入</el-button>-->
-<!--            <el-button v-show="[0, 1].includes(row.status)" type="warning" @click="onRemind(row)">提醒</el-button>-->
+            <!--            <el-button v-show="[4].includes(row.status)" type="primary" @click="onIntervene(row)">平台介入</el-button>-->
+            <!--            <el-button v-show="[0, 1].includes(row.status)" type="warning" @click="onRemind(row)">提醒</el-button>-->
             <el-button type="primary" plain @click="onDetail(row)">订单详情</el-button>
           </template>
         </el-table-column>
@@ -353,7 +353,7 @@ export default {
         hash: '',
         start_time: '',
         end_time: '',
-        type:1
+        type: 1
       },
       pages: Object.assign({}, pages),
       orderDetailVisible: false,

@@ -214,7 +214,7 @@ export default {
         keywords: '',
         tags: '',
         platform: '',
-        type:1
+        type: 1
       },
       list: [],
       imageViewer: false,

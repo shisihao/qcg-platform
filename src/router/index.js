@@ -254,6 +254,27 @@ export const constantRoutes = [
       title: '账单管理',
       icon: 'btc'
     }
+  },
+  {
+    path: '/platformPlan',
+    component: Layout,
+    children: [
+      {
+        path: '/platformPlans',
+        component: () => import('@/views/platformPlans/index'),
+        children: [],
+        name: 'platformPlans',
+        meta: {
+          title: '发售计划管理',
+          icon: ''
+        }
+      }
+    ],
+    name: 'collection',
+    meta: {
+      title: '社区管理',
+      icon: 'collection'
+    }
   }
 ]
 
