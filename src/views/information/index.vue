@@ -46,7 +46,14 @@
       v-loading="loading"
       border
       :data="list"
+      @selection-change="onSelectionChange"
     >
+      <el-table-column
+        type="selection"
+        width="55"
+        align="center"
+        :selectable="selectionStauts"
+      />
       <el-table-column
         prop="id"
         label="ID"
@@ -79,7 +86,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="内容"
+        label="话题标题"
         min-width="140"
         header-align="center"
       >
@@ -88,22 +95,45 @@
             popper-class="popover-box"
             placement="bottom"
             trigger="hover"
-            :content="row.intro"
+            :content="row.title"
           >
             <div slot="reference" class="more-ellipsis-3">
-              {{ row.intro }}
+              <div v-show="!!row.is_choiceness" class="choiceness">
+                <div class="choiceness-icon">精选</div>
+              </div>
+              {{ row.title }}
             </div>
           </el-popover>
         </template>
       </el-table-column>
       <el-table-column
+        label="话题封面"
+        width="100"
+        header-align="center"
+      >
+        <template slot-scope="{ row }">
+          <el-image
+            class="image-item"
+            :src="row.cover ? domin + row.cover.filename : ''"
+            :preview-src-list="[row.cover ? domin + row.cover.filename : '']"
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" />
+            </div>
+          </el-image>
+          <div v-show="!!row.type" class="choiceness">
+            <div class="choiceness-icon choiceness-icon-chain">上链</div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="images"
-        label="图片/投票"
+        label="详情图"
         width="365"
         header-align="center"
       >
         <template slot-scope="{ row, $index }">
-          <div v-if="!row.type" class="recommend-page">
+          <div class="recommend-page">
             <swiper :ref="'mySwiper' + $index" :options="swiperOption">
               <swiper-slide v-for="(item, index) in row.images" :key="index" class="images-list">
                 <el-image
@@ -117,13 +147,10 @@
             <div v-if="row.images.length > 3" slot="button-prev" class="swiper-button-prev" @click="prev($index)" />
             <div v-if="row.images.length > 3" slot="button-next" class="swiper-button-next" @click="next($index)" />
           </div>
-          <div v-for="(item,index) in row.topic_option" v-else :key="index" style="margin-left:30px">
-            选项{{ index+1 }}：{{ item.title }}
-          </div>
         </template>
       </el-table-column>
       <el-table-column
-        label="观点数据"
+        label="话题数据"
         width="120"
         header-align="center"
       >
@@ -144,15 +171,38 @@
       </el-table-column>
       <el-table-column
         prop="intro"
-        label="外链"
+        label="话题简介"
         header-align="center"
-      />
+      >
+        <template slot-scope="{ row }">
+          <el-popover
+            popper-class="popover-box"
+            placement="bottom"
+            trigger="hover"
+            :content="row.intro"
+          >
+            <div slot="reference" class="more-ellipsis-3">
+              {{ row.intro }}
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="created_at"
-        label="发布时间"
+        label="创建时间"
         width="140"
         align="center"
       />
+      <el-table-column
+        label="置顶"
+        width="60"
+        align="center"
+      >
+        <template slot-scope="{ row }">
+          <el-tag v-if="row.is_top ===1">是</el-tag>
+          <el-tag v-else type="warning">否</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="status"
         label="状态"
@@ -201,8 +251,10 @@
       >
         <template slot-scope="{ row }">
           <el-button-group>
-            <el-button type="info" plain @click="onContent(row)">查看内容</el-button>
-            <el-button v-if="row.status === 1" type="primary" plain @click="onComment(row)">查看评论</el-button>
+            <template v-if="row.status === 1">
+              <el-button type="primary" @click="onAddOrUpdate(row)">编辑</el-button>
+              <el-button type="primary" plain @click="onComment(row)">评论</el-button>
+            </template>
             <el-button type="danger" @click="onDelete(row)">删除</el-button>
           </el-button-group>
         </template>
@@ -229,16 +281,6 @@
       :on-close="closeViewer"
       :url-list="imageViewerList"
     />
-
-    <!--弹窗, 内容  -->
-    <el-dialog
-      title="查看观点内容"
-      :visible.sync="contentVisible"
-      width="60%"
-    >
-      <span>{{ content }}</span>
-    </el-dialog>
-
   </div>
 </template>
 
@@ -246,7 +288,7 @@
 import Pagination from '@/components/Pagination'
 import AddOrUpdate from './components/AddOrUpdate'
 import Comment from './components/Comment'
-import { dataList, deleteData, exportOrder } from '@/api/topics'
+import { dataList, deleteData, exportOrder } from '@/api/information'
 import { whetherOptions, pickerOptions } from '@/utils/explain'
 import { DominKey, getToken } from '@/utils/auth'
 import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
@@ -254,8 +296,8 @@ import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 import 'swiper/swiper-bundle.css'
 
 export default {
-  name: 'Topics',
-  components: { Pagination, ElImageViewer, AddOrUpdate, Comment, Swiper, SwiperSlide },
+  name: 'Topic',
+  components: { Pagination, AddOrUpdate, Comment, ElImageViewer, Swiper, SwiperSlide },
   data() {
     return {
       swiperOption: {
@@ -271,7 +313,11 @@ export default {
       pickerOptions,
       dateRangeValue: [],
       search: {
+        title: '',
         keywords: '',
+        type: '',
+        is_top: '',
+        is_choiceness: '',
         status: '',
         start_time: '',
         end_time: ''
@@ -292,14 +338,16 @@ export default {
         status: '',
         reason: ''
       },
-      content: '',
       list: [],
+      selection: [],
       loading: false,
       downloadLoading: false,
-      contentVisible: false,
-      commentVisible: false,
       addOrUpdateVisible: false,
+      selectionVisible: false,
+      likeOrHotVisible: false,
+      commentVisible: false,
       imageViewerList: [],
+      forbidVisible: false,
       imageViewer: false
     }
   },
@@ -331,6 +379,9 @@ export default {
           this.loading = false
         })
     },
+    selectionStauts(row) {
+      return !row.status
+    },
     onChangeDateRange(value) {
       if (Array.isArray(value)) {
         this.search.start_time = value[0]
@@ -340,9 +391,14 @@ export default {
         this.getList(1)
       }
     },
-    onContent(row) {
-      this.contentVisible = true
-      this.content = row.intro
+    onSelectionChange(val) {
+      this.selection = val
+    },
+    onSelection(data) {
+      this.selectionVisible = true
+      this.$nextTick(() => {
+        this.$refs.selection && this.$refs.selection.init(data)
+      })
     },
     onHandleDownload() {
       this.downloadLoading = true

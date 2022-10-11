@@ -2,31 +2,65 @@
   <div>
     <el-dialog top="30px" :title="form.id ? $t('table.edit') : $t('table.add')" :visible.sync="visible" @closed="onClose()">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="发起用户">
-          <el-avatar icon="el-icon-user-solid" style="vertical-align: top;" :src="userInfo.avatar ? (domin + userInfo.avatar) : ''" />
-          <div style="display: inline-block;margin-left: 2px">
-            <div>
-              #{{ userInfo.id }}
-              <el-divider direction="vertical" />
-              {{ userInfo.name }}
-            </div>
-            <div>
-              {{ userInfo.phone }}
-            </div>
+        <el-form-item label="话题封面" prop="cover">
+          <custom-upload
+            class-name="avatar-uploader"
+            ref-name="cover"
+            @handleBeforeUpload="beforeAvatarUpload"
+            @handleSuccess="handleAvatarSuccess"
+          >
+            <img v-if="form.cover.filename" :src="form.cover.filename && domin + form.cover.filename" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </custom-upload>
+        </el-form-item>
+        <el-form-item>
+          <div class="notice">
+            注意：建议话题封面尺寸 750*750px
           </div>
         </el-form-item>
-        <el-form-item label="观点内容" prop="intro">
-          <el-input v-model="form.intro" show-word-limit clearable type="textarea" placeholder="观点内容" :rows="5" />
+        <el-form-item label="话题标题" prop="title">
+          <el-input v-model="form.title" show-word-limit maxlength="48" placeholder="话题标题" clearable />
         </el-form-item>
-        <el-form-item label="观点类型" prop="type">
-          <el-radio-group v-model="form.type" @change="onChangeType">
-            <el-radio :label="0">添加图片</el-radio>
-            <el-radio :label="1">添加投票</el-radio>
+        <el-form-item label="话题简介" prop="intro">
+          <el-input v-if="form.id && !form.is_rich" v-model="form.intro" show-word-limit clearable maxlength="1000" type="textarea" placeholder="话题简介" :rows="5" />
+          <el-link v-else type="primary" :underline="false" @click="onTinymce(form)">
+            点击编辑
+          </el-link>
+        </el-form-item>
+        <el-form-item label="编辑点赞数" prop="like">
+          <el-input-number v-model="form.like" controls-position="right" :min="0" :precision="0" placeholder="编辑点赞数" style="width: 180px" />
+        </el-form-item>
+        <el-form-item label="编辑热度数" prop="heat">
+          <el-input-number v-model="form.heat" controls-position="right" :min="0" :precision="0" placeholder="编辑热度数" style="width: 180px" />
+        </el-form-item>
+        <el-form-item label="发起用户" prop="user_id">
+          <el-select
+            v-model="form.user_id"
+            filterable
+            remote
+            placeholder="请输入关键词"
+            :remote-method="remoteMethod"
+            :loading="userLoading"
+          >
+            <el-option v-for="item in usersOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否精选" prop="is_choiceness">
+          <el-radio-group v-model="form.is_choiceness">
+            <el-radio :label="0">否</el-radio>
+            <el-radio :label="1">是</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="form.type===0" label="最多6张" prop="images">
+        <el-form-item label="是否置顶" prop="is_top">
+          <el-radio-group v-model="form.is_top">
+            <el-radio :label="0">否</el-radio>
+            <el-radio :label="1">是</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="详情图">
           <div class="filter-list-box">
             <draggable v-model="form.images" v-bind="dragOptions" class="wrapper" @start="drag = true" @end="drag = false">
+              <!-- <transition-group>-->
               <div v-for="(item, index) in form.images" :key="index" class="upload-images">
                 <div class="upload-image">
                   <el-image :src="item.filename && domin + item.filename" class="imageDetail" />
@@ -36,9 +70,9 @@
                   <i class="el-icon-delete" @click="onPictureRemove(item,index)" />
                 </div>
               </div>
-            </draggable>
-            <custom-upload
-              v-show="form.images.length < 6"
+              <!-- </transition-group>-->
+            </draggable><custom-upload
+              v-show="form.images.length < 5"
               ref-name="images"
               class-name="avatar-uploader"
               @handleBeforeUpload="beforeAvatarUpload"
@@ -47,17 +81,6 @@
               <i slot="default" class="el-icon-plus avatar-uploader-icon" />
             </custom-upload>
           </div>
-        </el-form-item>
-        <el-form-item v-else label-width="37px">
-          <div v-for="(item,index) in form.option" :key="index" class="option-list">
-            选项{{ index+1 }}
-            <el-input v-model="form.option[index]['title']" class="option" placeholder="请输入选项内容" />
-            <i v-show="form.option.length!==1" class="el-icon-delete" @click="onDeleteOption(index)" />
-          </div>
-          <el-button class="option-btn el-icon-plus" @click="onAddOption"> 添加选项</el-button>
-        </el-form-item>
-        <el-form-item label="外链">
-          <el-input v-model="form.url" placeholder="请输入链接" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -75,29 +98,33 @@
       :on-close="closeViewer"
       :url-list="imageViewerList"
     />
+    <edit-tinymce v-if="editTinymceVisible" ref="editTinymce" @info="onInfo" />
   </div>
 </template>
 
 <script>
-import { addOrUpdate } from '@/api/topics'
+import { addOrUpdate } from '@/api/information'
+import { userList } from '@/api/common'
 import CustomUpload from '@/components/Upload/CustomUpload'
 import { DominKey, getToken } from '@/utils/auth'
 import draggable from 'vuedraggable'
 import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
+import EditTinymce from './EditTinymce'
 
 export default {
   name: 'AddOrUpdate',
-  components: { CustomUpload, draggable, ElImageViewer },
+  components: { CustomUpload, draggable, ElImageViewer, EditTinymce },
   data() {
     return {
       visible: false,
       btnLoading: false,
+      userLoading: false,
+      editTinymceVisible: false,
       domin: getToken(DominKey),
-      userInfo: JSON.parse(getToken('userInfo')),
+      usersOptions: [],
       imageViewer: false,
       imageViewerList: [],
       currentName: '',
-      optionIndex: 0,
       image: {
         width: 0,
         height: 0,
@@ -105,20 +132,45 @@ export default {
       },
       form: {
         id: 0,
-        images: [],
-        option: [],
+        is_rich: 0,
+        title: '',
+        cover: {
+          width: 0,
+          height: 0,
+          mine: '',
+          filename: ''
+        },
         intro: '',
-        type: 0,
-        url: ''
+        images: [],
+        user_id: '',
+        like: 0,
+        is_top: 0,
+        heat: 0,
+        is_choiceness: 0
       },
       rules: {
-        type: [
+        title: [
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+        ],
+        cover: [
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }
         ],
         intro: [
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }
         ],
         images: [
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+        ],
+        user_id: [
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+        ],
+        is_choiceness: [
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+        ],
+        like: [
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+        ],
+        heat: [
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }
         ]
       }
@@ -139,6 +191,24 @@ export default {
       this.visible = true
       if (data) {
         this.form = JSON.parse(JSON.stringify(data))
+        this.remoteMethod(data.user && data.user.name)
+      }
+    },
+    remoteMethod(query) {
+      if (query !== '') {
+        this.userLoading = true
+        userList({ keywords: query })
+          .then(response => {
+            this.userLoading = false
+            this.usersOptions = response.data.map(v => {
+              return {
+                label: v.name,
+                value: v.id
+              }
+            })
+          })
+      } else {
+        this.usersOptions = []
       }
     },
     onFormSubmit() {
@@ -158,29 +228,23 @@ export default {
         }
       })
     },
-    onAddOption() {
-      this.form.option.push({
-        title: ''
-      })
-    },
-    onDeleteOption(index) {
-      this.form.option.splice(index, 1)
-    },
-    onChangeType(e) {
-      if (e === 1 && this.form.option.length === 0) {
-        this.form.option.push({
-          'title': ''
-        })
-      }
-    },
     onClose() {
       this.$reset()
+    },
+    onTinymce(data) {
+      this.editTinymceVisible = true
+      this.$nextTick(() => {
+        this.$refs.editTinymce && this.$refs.editTinymce.init(data)
+      })
+    },
+    onInfo(value) {
+      this.form.intro = value
     },
     onPicturePreview(img) {
       this.imageViewerList = [this.domin + img.filename]
       this.imageViewer = true
     },
-    onPictureRemove(index) {
+    onPictureRemove(img, index) {
       this.form.images.splice(index, 1)
     },
     closeViewer() {
@@ -227,9 +291,13 @@ export default {
             this.image.width = response.width
             this.image.height = response.height
             this.image.mime = file.type
+          } else {
+            this.form.cover.width = response.width
+            this.form.cover.height = response.height
+            this.form.cover.mime = file.type
           }
         })
-        .catch(() => { })
+        .catch(() => {})
       cb(true)
     }
 
@@ -238,24 +306,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.option-list {
-  margin-bottom: 10px;
-  .option {
-    width: 400px;
-    margin-left: 25px;
-  }
-  .el-icon-delete {
-    color: #f56c6c;
-    margin-left: 20px;
-    cursor: pointer;
-  }
-}
-
-.option-btn {
-  float: right;
-  margin-right: 59px;
-}
-
 .avatar-uploader {
   display: inline-block;
   ::v-deep .el-upload {
@@ -266,7 +316,7 @@ export default {
     overflow: hidden;
   }
   .el-upload:hover {
-    border-color: #409eff;
+    border-color: #409EFF;
   }
   .avatar-uploader-icon {
     font-size: 28px;
@@ -325,7 +375,7 @@ export default {
       position: absolute;
       left: 0;
       top: 0;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0,0,0,0.5);
       text-align: center;
       display: none;
       i {

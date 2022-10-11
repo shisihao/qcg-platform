@@ -288,6 +288,16 @@ export const constantRoutes = [
           title: '藏友之家管理',
           icon: ''
         }
+      },
+      {
+        path: '/information',
+        component: () => import('@/views/information/index'),
+        children: [],
+        name: 'home',
+        meta: {
+          title: '资讯管理',
+          icon: ''
+        }
       }
     ],
     name: 'collection',
