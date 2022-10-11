@@ -132,6 +132,16 @@
           <el-tag v-for="(item, index) in tags" :key="index" effect="plain">{{ item }}</el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="是否允许寄售" align="center" width="100">
+        <template slot-scope="{row}">
+          <el-switch
+            v-model="row.sales_status"
+            :active-value="1"
+            :inactive-value="0"
+            @change="onGoodSales(row)"
+          />
+        </template>
+      </el-table-column>
       <el-table-column label="自动锁单状态" align="center" width="100">
         <template slot-scope="{row}">
           <el-switch
@@ -294,8 +304,15 @@ export default {
         this.updateSwitch(row)
       }
     },
-    updateSwitch(row, value = row.lock_price) {
-      putGoodsDetail(row.id, { detail: row.detail, desc: row.desc, lock: row.lock, lock_price: value })
+    onGoodSales(row) {
+      if (row.sales_status) {
+        this.updateSwitch(row, row.lock_price, 1)
+      } else {
+        this.updateSwitch(row, row.lock_price, 0)
+      }
+    },
+    updateSwitch(row, value = row.lock_price, sales = row.sales_status) {
+      putGoodsDetail(row.id, { detail: row.detail, desc: row.desc, lock: row.lock, lock_price: value, sales_status: sales })
         .then(({ msg }) => {
           this.$message.success(msg)
           this.getList()

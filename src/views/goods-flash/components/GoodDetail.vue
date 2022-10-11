@@ -36,7 +36,7 @@
         <el-image
           class="icon-logo"
           fit="cover"
-          :src="row.author_avatar &&  row.author_avatar"
+          :src="row.author_avatar && row.author_avatar"
         >
           <div slot="error" class="image-slot">
             <i class="el-icon-picture-outline" />
@@ -62,6 +62,11 @@
       <el-descriptions-item label="交易HASH" :span="3">
         {{ row.hash }}
       </el-descriptions-item>
+      <el-descriptions-item label="是否允许寄售" :span="3">
+        <el-radio-group v-model="row.sales_status">
+          <el-radio v-for="(item,index) in whetherOptions.slice(1)" :key="index" :label="item.value">{{ item.label }}</el-radio>
+        </el-radio-group>
+      </el-descriptions-item>
       <el-descriptions-item label="自动锁单" :span="3">
         <el-radio-group v-model="row.lock">
           <el-radio v-for="(item,index) in whetherOptions.slice(1)" :key="index" :label="item.value">{{ item.label }}</el-radio>
@@ -71,7 +76,7 @@
         <el-input-number v-model="row.lock_price" placeholder="请输入价格" :min="0" :precision="2" controls-position="right" />
       </el-descriptions-item>
       <el-descriptions-item label="藏品描述" :span="3">
-        <el-input :disabled="true" v-model="row.desc" type="textarea" :rows="4" />
+        <el-input v-model="row.desc" :disabled="true" type="textarea" :rows="4" />
       </el-descriptions-item>
       <el-descriptions-item label="详情说明" :span="3">
         <el-link type="primary" :underline="false" @click="onTinymce(row.detail)">点击查看</el-link>
@@ -155,7 +160,7 @@ export default {
     },
     onFormSubmit() {
       this.btnLoading = true
-      putGoodsDetail(this.row.id, { detail: this.row.detail, desc: this.row.desc, lock: this.row.lock, lock_price: this.row.lock_price })
+      putGoodsDetail(this.row.id, { detail: this.row.detail, desc: this.row.desc, lock: this.row.lock, lock_price: this.row.lock_price, sales_status: this.row.sales_status })
         .then(({ msg }) => {
           this.$message.success(msg)
           this.visible = false
