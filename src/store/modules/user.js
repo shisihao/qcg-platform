@@ -50,6 +50,7 @@ const actions = {
         setToken(data.account.auth_token)
         setLogo(data.platform_logo ? data.platform_logo : data.ma_platform_logo)
         data.oss && setToken(JSON.stringify(data.oss), OssKey)
+        setToken(JSON.stringify(data.account.user), 'userInfo')
         resolve(data)
       }).catch(error => {
         reject(error)

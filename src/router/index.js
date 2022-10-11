@@ -256,16 +256,36 @@ export const constantRoutes = [
     }
   },
   {
-    path: '/platformPlan',
+    path: '/plan',
     component: Layout,
     children: [
       {
-        path: '/platformPlans',
-        component: () => import('@/views/platformPlans/index'),
+        path: '/plans',
+        component: () => import('@/views/plans/index'),
         children: [],
-        name: 'platformPlans',
+        name: 'plans',
         meta: {
           title: '发售计划管理',
+          icon: ''
+        }
+      },
+      {
+        path: '/topics',
+        component: () => import('@/views/topics/index'),
+        children: [],
+        name: 'topics',
+        meta: {
+          title: '观点管理',
+          icon: ''
+        }
+      },
+      {
+        path: '/home',
+        component: () => import('@/views/home/index'),
+        children: [],
+        name: 'home',
+        meta: {
+          title: '藏友之家管理',
           icon: ''
         }
       }
