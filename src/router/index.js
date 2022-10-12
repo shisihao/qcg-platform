@@ -218,7 +218,7 @@ export const constantRoutes = [
         }
       }
     ],
-    name: 'collection',
+    name: 'good',
     meta: {
       title: '藏品管理',
       icon: 'collection'
@@ -258,6 +258,11 @@ export const constantRoutes = [
   {
     path: '/plan',
     component: Layout,
+    name: 'plan',
+    meta: {
+      title: '社区管理',
+      icon: 'example'
+    },
     children: [
       {
         path: '/plans',
@@ -280,16 +285,6 @@ export const constantRoutes = [
         }
       },
       {
-        path: '/home',
-        component: () => import('@/views/home/index'),
-        children: [],
-        name: 'home',
-        meta: {
-          title: '藏友之家管理',
-          icon: ''
-        }
-      },
-      {
         path: '/information',
         component: () => import('@/views/information/index'),
         children: [],
@@ -298,13 +293,19 @@ export const constantRoutes = [
           title: '资讯管理',
           icon: ''
         }
+      },
+      {
+        path: '/home',
+        component: () => import('@/views/home/index'),
+        children: [],
+        name: 'home',
+        meta: {
+          title: '藏友之家管理',
+          icon: ''
+        }
       }
-    ],
-    name: 'collection',
-    meta: {
-      title: '社区管理',
-      icon: 'collection'
-    }
+
+    ]
   }
 ]
 
