@@ -8,8 +8,8 @@
           clearable
         />
       </el-form-item>
-      <el-form-item label="字母索引" prop="index">
-        <el-input v-model="form.index" clearable placeholder="藏友之家排序使用，填写英文字母缩写" oninput="value=value.replace(/[^A-Z]/,'')" />
+      <el-form-item label="字母索引(大写)" prop="index">
+        <el-input v-model="form.index" clearable placeholder="排序使用，填写英文字母缩写(大写)" oninput="value=value.replace(/[^A-Z]/,'')" />
       </el-form-item>
       <el-form-item label="logo" prop="logo">
         <custom-upload
@@ -72,7 +72,8 @@ export default {
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }
         ],
         index: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] },
+          { max: 1, message: '长度1个字符' }
         ],
         intro: [
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }

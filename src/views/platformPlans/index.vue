@@ -33,12 +33,6 @@
       :data="list"
     >
       <el-table-column
-        prop="id"
-        label="ID"
-        width="80"
-        align="center"
-      />
-      <el-table-column
         prop="name"
         label="藏品名称"
         align="center"

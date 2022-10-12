@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-descriptions title="藏友之家信息" :column="1">
+    <el-descriptions v-if="data.id" title="藏友之家信息" :column="1">
       <el-descriptions-item label="名称">{{ data.name }}</el-descriptions-item>
       <el-descriptions-item label="字母索引">{{ data.index }}</el-descriptions-item>
       <el-descriptions-item label="logo">
