@@ -71,7 +71,6 @@ export default {
     return {
       visible: false,
       loading: false,
-      forbidVisible: false,
       domin: getToken(DominKey),
       search: {
         target_id: 0,

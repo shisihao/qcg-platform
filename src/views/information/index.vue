@@ -5,6 +5,14 @@
         <el-form-item label="发起用户">
           <el-input v-model="search.keywords" placeholder="用户ID/昵称/手机号" clearable @clear="getList(1)" @keyup.enter.native="getList(1)" />
         </el-form-item>
+        <el-form-item label="资讯标题">
+          <el-input v-model="search.title" placeholder="用户ID/昵称/手机号" clearable @clear="getList(1)" @keyup.enter.native="getList(1)" />
+        </el-form-item>
+        <el-form-item label="所属板块">
+          <el-select v-model="search.type" placeholder="请选择" clearable @change="getList(1)">
+            <el-option v-for="(item,index) in typeOptions" :key="index" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="发布时间">
           <el-date-picker
             v-model="dateRangeValue"
@@ -86,7 +94,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="话题标题"
+        label="资讯标题"
         min-width="140"
         header-align="center"
       >
@@ -107,7 +115,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="话题封面"
+        label="资讯封面"
         width="100"
         header-align="center"
       >
@@ -121,9 +129,6 @@
               <i class="el-icon-picture-outline" />
             </div>
           </el-image>
-          <div v-show="!!row.type" class="choiceness">
-            <div class="choiceness-icon choiceness-icon-chain">上链</div>
-          </div>
         </template>
       </el-table-column>
       <el-table-column
@@ -150,7 +155,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="话题数据"
+        label="资讯数据"
         width="120"
         header-align="center"
       >
@@ -170,39 +175,19 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="intro"
-        label="话题简介"
-        header-align="center"
+        align="center"
+        label="所属板块"
       >
-        <template slot-scope="{ row }">
-          <el-popover
-            popper-class="popover-box"
-            placement="bottom"
-            trigger="hover"
-            :content="row.intro"
-          >
-            <div slot="reference" class="more-ellipsis-3">
-              {{ row.intro }}
-            </div>
-          </el-popover>
+        <template slot-scope="{row}">
+          <div :style="`color:${row.type?'#67C23A':'#409EFF'}`">{{ row.type | paraphrase(typeOptions) }}</div>
         </template>
       </el-table-column>
       <el-table-column
         prop="created_at"
-        label="创建时间"
+        label="发布时间"
         width="140"
         align="center"
       />
-      <el-table-column
-        label="置顶"
-        width="60"
-        align="center"
-      >
-        <template slot-scope="{ row }">
-          <el-tag v-if="row.is_top ===1">是</el-tag>
-          <el-tag v-else type="warning">否</el-tag>
-        </template>
-      </el-table-column>
       <el-table-column
         prop="status"
         label="状态"
@@ -245,16 +230,15 @@
       </el-table-column>
       <el-table-column
         label="操作"
-        width="245"
+        width="280"
         align="center"
         fixed="right"
       >
         <template slot-scope="{ row }">
           <el-button-group>
-            <template v-if="row.status === 1">
-              <el-button type="primary" @click="onAddOrUpdate(row)">编辑</el-button>
-              <el-button type="primary" plain @click="onComment(row)">评论</el-button>
-            </template>
+            <el-button type="primary" @click="onAddOrUpdate(row)">编辑</el-button>
+            <el-button type="info" plain @click="onContent(row)">查看内容</el-button>
+            <el-button type="primary" plain @click="onComment(row)">评论</el-button>
             <el-button type="danger" @click="onDelete(row)">删除</el-button>
           </el-button-group>
         </template>
@@ -281,6 +265,16 @@
       :on-close="closeViewer"
       :url-list="imageViewerList"
     />
+    <!--弹窗, 内容  -->
+    <el-dialog
+      title="查看资讯内容"
+      :visible.sync="contentVisible"
+      width="800px"
+      class="dialog-img"
+    >
+      <div v-html="content" />
+    </el-dialog>
+
   </div>
 </template>
 
@@ -296,7 +290,7 @@ import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 import 'swiper/swiper-bundle.css'
 
 export default {
-  name: 'Topic',
+  name: 'Information',
   components: { Pagination, AddOrUpdate, Comment, ElImageViewer, Swiper, SwiperSlide },
   data() {
     return {
@@ -316,8 +310,6 @@ export default {
         title: '',
         keywords: '',
         type: '',
-        is_top: '',
-        is_choiceness: '',
         status: '',
         start_time: '',
         end_time: ''
@@ -333,6 +325,10 @@ export default {
         { label: '已通过', type: 'success', value: 1 },
         { label: '已驳回', type: 'danger', value: 2 }
       ],
+      typeOptions: [
+        { label: '平台资讯', type: 'warning', value: 0 },
+        { label: '行业资讯', type: 'success', value: 1 }
+      ],
       form: {
         topic_id: [],
         status: '',
@@ -340,14 +336,14 @@ export default {
       },
       list: [],
       selection: [],
+      content: '',
       loading: false,
       downloadLoading: false,
       addOrUpdateVisible: false,
       selectionVisible: false,
-      likeOrHotVisible: false,
+      contentVisible: false,
       commentVisible: false,
       imageViewerList: [],
-      forbidVisible: false,
       imageViewer: false
     }
   },
@@ -422,6 +418,10 @@ export default {
       this.$nextTick(() => {
         this.$refs.comment && this.$refs.comment.init(data)
       })
+    },
+    onContent(row) {
+      this.contentVisible = true
+      this.content = row.intro
     },
     onDelete(row) {
       this.$confirm(`确定删除「#${row.id}」<span style="color: #eb7340;">#${row.title}#</span> ？`, '提示', {
@@ -583,5 +583,8 @@ export default {
       }
     }
   }
+}
+.dialog-img{
+  width: 100%;
 }
 </style>

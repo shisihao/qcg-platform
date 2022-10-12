@@ -16,10 +16,10 @@
           </div>
         </el-form-item>
         <el-form-item label="观点内容" prop="intro">
-          <el-input v-model="form.intro" show-word-limit clearable type="textarea" placeholder="观点内容" :rows="5" />
+          <el-input v-model="form.intro" show-word-limit clearable type="textarea" maxlength="1000" placeholder="观点内容" :rows="5" />
         </el-form-item>
         <el-form-item label="观点类型" prop="type">
-          <el-radio-group v-model="form.type" @change="onChangeType">
+          <el-radio-group v-model="form.type" :disabled="!!form.id" @change="onChangeType">
             <el-radio :label="0">添加图片</el-radio>
             <el-radio :label="1">添加投票</el-radio>
           </el-radio-group>
@@ -48,13 +48,13 @@
             </custom-upload>
           </div>
         </el-form-item>
-        <el-form-item v-else label-width="37px">
-          <div v-for="(item,index) in form.option" :key="index" class="option-list">
-            选项{{ index+1 }}
-            <el-input v-model="form.option[index]['title']" class="option" placeholder="请输入选项内容" />
-            <i v-show="form.option.length!==1" class="el-icon-delete" @click="onDeleteOption(index)" />
+        <el-form-item v-else label-width="0px">
+          <div v-for="(item,index) in form.topic_option" :key="index" class="option-list">
+            <span>选项{{ index+1 }}</span>
+            <el-input v-model="form.topic_option[index]['title']" :disabled="!!form.id" class="option" placeholder="请输入选项内容" />
+            <i v-show="form.topic_option.length!==1&&!form.id" class="el-icon-delete" @click="onDeleteOption(index)" />
           </div>
-          <el-button class="option-btn el-icon-plus" @click="onAddOption"> 添加选项</el-button>
+          <el-button v-show="!form.id" class="option-btn el-icon-plus" @click="onAddOption"> 添加选项</el-button>
         </el-form-item>
         <el-form-item label="外链">
           <el-input v-model="form.url" placeholder="请输入链接" />
@@ -106,7 +106,7 @@ export default {
       form: {
         id: 0,
         images: [],
-        option: [],
+        topic_option: [],
         intro: '',
         type: 0,
         url: ''
@@ -159,16 +159,16 @@ export default {
       })
     },
     onAddOption() {
-      this.form.option.push({
+      this.form.topic_option.push({
         title: ''
       })
     },
     onDeleteOption(index) {
-      this.form.option.splice(index, 1)
+      this.form.topic_option.splice(index, 1)
     },
     onChangeType(e) {
-      if (e === 1 && this.form.option.length === 0) {
-        this.form.option.push({
+      if (e === 1 && this.form.topic_option.length === 0) {
+        this.form.topic_option.push({
           'title': ''
         })
       }
@@ -239,10 +239,17 @@ export default {
 
 <style lang="scss" scoped>
 .option-list {
+  display: flex;
+  align-items: center;
   margin-bottom: 10px;
+  span {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+    padding-right: 12px;
+  }
   .option {
     width: 400px;
-    margin-left: 25px;
   }
   .el-icon-delete {
     color: #f56c6c;

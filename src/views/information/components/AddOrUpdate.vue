@@ -2,7 +2,7 @@
   <div>
     <el-dialog top="30px" :title="form.id ? $t('table.edit') : $t('table.add')" :visible.sync="visible" @closed="onClose()">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="话题封面" prop="cover">
+        <el-form-item label="资讯封面" prop="cover">
           <custom-upload
             class-name="avatar-uploader"
             ref-name="cover"
@@ -15,52 +15,38 @@
         </el-form-item>
         <el-form-item>
           <div class="notice">
-            注意：建议话题封面尺寸 750*750px
+            注意：建议资讯封面尺寸 750*750px
           </div>
         </el-form-item>
-        <el-form-item label="话题标题" prop="title">
-          <el-input v-model="form.title" show-word-limit maxlength="48" placeholder="话题标题" clearable />
+        <el-form-item label="资讯标题" prop="title">
+          <el-input v-model="form.title" show-word-limit maxlength="48" placeholder="资讯标题" clearable />
         </el-form-item>
-        <el-form-item label="话题简介" prop="intro">
-          <el-input v-if="form.id && !form.is_rich" v-model="form.intro" show-word-limit clearable maxlength="1000" type="textarea" placeholder="话题简介" :rows="5" />
-          <el-link v-else type="primary" :underline="false" @click="onTinymce(form)">
+        <el-form-item label="资讯内容" prop="intro">
+          <el-link type="primary" :underline="false" @click="onTinymce(form)">
             点击编辑
           </el-link>
         </el-form-item>
-        <el-form-item label="编辑点赞数" prop="like">
-          <el-input-number v-model="form.like" controls-position="right" :min="0" :precision="0" placeholder="编辑点赞数" style="width: 180px" />
-        </el-form-item>
-        <el-form-item label="编辑热度数" prop="heat">
-          <el-input-number v-model="form.heat" controls-position="right" :min="0" :precision="0" placeholder="编辑热度数" style="width: 180px" />
-        </el-form-item>
-        <el-form-item label="发起用户" prop="user_id">
-          <el-select
-            v-model="form.user_id"
-            filterable
-            remote
-            placeholder="请输入关键词"
-            :remote-method="remoteMethod"
-            :loading="userLoading"
-          >
-            <el-option v-for="item in usersOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否精选" prop="is_choiceness">
-          <el-radio-group v-model="form.is_choiceness">
-            <el-radio :label="0">否</el-radio>
-            <el-radio :label="1">是</el-radio>
+        <el-form-item label="资讯类型">
+          <el-radio-group v-model="form.type">
+            <el-radio v-for="(item,index) in typeOptions" :key="index" :label="item.value">{{ item.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="是否置顶" prop="is_top">
-          <el-radio-group v-model="form.is_top">
-            <el-radio :label="0">否</el-radio>
-            <el-radio :label="1">是</el-radio>
-          </el-radio-group>
+        <el-form-item label="发起用户">
+          <el-avatar icon="el-icon-user-solid" style="vertical-align: top;" :src="userInfo.avatar ? (domin + userInfo.avatar) : ''" />
+          <div style="display: inline-block;margin-left: 2px">
+            <div>
+              #{{ userInfo.id }}
+              <el-divider direction="vertical" />
+              {{ userInfo.name }}
+            </div>
+            <div>
+              {{ userInfo.phone }}
+            </div>
+          </div>
         </el-form-item>
         <el-form-item label="详情图">
           <div class="filter-list-box">
             <draggable v-model="form.images" v-bind="dragOptions" class="wrapper" @start="drag = true" @end="drag = false">
-              <!-- <transition-group>-->
               <div v-for="(item, index) in form.images" :key="index" class="upload-images">
                 <div class="upload-image">
                   <el-image :src="item.filename && domin + item.filename" class="imageDetail" />
@@ -70,7 +56,6 @@
                   <i class="el-icon-delete" @click="onPictureRemove(item,index)" />
                 </div>
               </div>
-              <!-- </transition-group>-->
             </draggable><custom-upload
               v-show="form.images.length < 5"
               ref-name="images"
@@ -104,7 +89,6 @@
 
 <script>
 import { addOrUpdate } from '@/api/information'
-import { userList } from '@/api/common'
 import CustomUpload from '@/components/Upload/CustomUpload'
 import { DominKey, getToken } from '@/utils/auth'
 import draggable from 'vuedraggable'
@@ -121,9 +105,13 @@ export default {
       userLoading: false,
       editTinymceVisible: false,
       domin: getToken(DominKey),
-      usersOptions: [],
+      userInfo: JSON.parse(getToken('userInfo')),
       imageViewer: false,
       imageViewerList: [],
+      typeOptions: [
+        { label: '平台资讯', type: 'warning', value: 0 },
+        { label: '行业资讯', type: 'success', value: 1 }
+      ],
       currentName: '',
       image: {
         width: 0,
@@ -134,6 +122,7 @@ export default {
         id: 0,
         is_rich: 0,
         title: '',
+        type: 0,
         cover: {
           width: 0,
           height: 0,
@@ -141,12 +130,7 @@ export default {
           filename: ''
         },
         intro: '',
-        images: [],
-        user_id: '',
-        like: 0,
-        is_top: 0,
-        heat: 0,
-        is_choiceness: 0
+        images: []
       },
       rules: {
         title: [
@@ -159,18 +143,6 @@ export default {
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }
         ],
         images: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
-        ],
-        user_id: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
-        ],
-        is_choiceness: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
-        ],
-        like: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
-        ],
-        heat: [
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }
         ]
       }
@@ -191,24 +163,6 @@ export default {
       this.visible = true
       if (data) {
         this.form = JSON.parse(JSON.stringify(data))
-        this.remoteMethod(data.user && data.user.name)
-      }
-    },
-    remoteMethod(query) {
-      if (query !== '') {
-        this.userLoading = true
-        userList({ keywords: query })
-          .then(response => {
-            this.userLoading = false
-            this.usersOptions = response.data.map(v => {
-              return {
-                label: v.name,
-                value: v.id
-              }
-            })
-          })
-      } else {
-        this.usersOptions = []
       }
     },
     onFormSubmit() {

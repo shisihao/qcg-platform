@@ -195,14 +195,15 @@
       </el-table-column>
       <el-table-column
         label="操作"
-        width="245"
+        width="280"
         align="center"
         fixed="right"
       >
         <template slot-scope="{ row }">
           <el-button-group>
+            <el-button type="primary" @click="onAddOrUpdate(row)">编辑</el-button>
             <el-button type="info" plain @click="onContent(row)">查看内容</el-button>
-            <el-button v-if="row.status === 1" type="primary" plain @click="onComment(row)">查看评论</el-button>
+            <el-button type="primary" plain @click="onComment(row)">评论</el-button>
             <el-button type="danger" @click="onDelete(row)">删除</el-button>
           </el-button-group>
         </template>
@@ -462,29 +463,7 @@ export default {
     }
   }
 }
-.choiceness {
-  width: 36px;
-  height: 36px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  .choiceness-icon {
-    position: absolute;
-    left: -16px;
-    top: 4px;
-    background-color: #e6a23c;
-    color: #fff;
-    width: 54px;
-    height: 18px;
-    transform: rotate(-45deg);
-    line-height: 18px;
-    text-align: center;
-  }
-  .choiceness-icon-chain {
-    background-color: #1890ff;
-  }
-}
+
 .recommend-page {
   width: 291px;
   margin: 0 auto;
