@@ -1,15 +1,20 @@
 <template>
   <el-dialog :title="form.id ? $t('table.edit') : $t('table.add')" width="600px" :visible.sync="visible" @closed="onClose()">
     <el-form ref="form" :model="form" :rules="rules" label-width="140px">
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="平台名称" prop="name">
         <el-input
           v-model="form.name"
-          placeholder="名称"
+          placeholder="平台名称"
           clearable
         />
       </el-form-item>
-      <el-form-item label="字母索引(大写)" prop="index">
-        <el-input v-model="form.index" clearable placeholder="排序使用，填写英文字母缩写(大写)" oninput="value=value.replace(/[^A-Z]/,'')" />
+      <el-form-item label="字母索引" prop="index">
+        <el-autocomplete
+          v-model="form.index"
+          class="inline-input"
+          :fetch-suggestions="querySearch"
+          placeholder="请输入字母（可搜索）"
+        />
       </el-form-item>
       <el-form-item label="logo" prop="logo">
         <custom-upload
@@ -29,6 +34,21 @@
       </el-form-item>
       <el-form-item label="平台简介" prop="intro">
         <el-input v-model="form.intro" placeholder="请输入平台简介" type="textarea" :rows="4" />
+      </el-form-item>
+      <el-form-item label="是否展示" prop="is_show">
+        <el-radio-group v-model="form.is_show">
+          <el-radio :label="0">否</el-radio>
+          <el-radio :label="1">是</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="是否热门" prop="is_hot">
+        <el-radio-group v-model="form.is_hot">
+          <el-radio :label="0">否</el-radio>
+          <el-radio :label="1">是</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="热门排序" prop="sort">
+        <el-input-number v-model="form.sort" :min="0" :precision="0" placeholder="请输入排序序号" controls-position="right" />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -51,18 +71,28 @@ export default {
   name: 'AddOrUpdate',
   components: { CustomUpload },
   data() {
+    var validatePass = (rule, value, callback) => {
+      if (!/[a-zA-Z]/g.test(value)) {
+        callback(new Error('请输入英文字符'))
+      } else {
+        callback()
+      }
+    }
     return {
       domin: getToken(DominKey),
       visible: false,
       btnLoading: false,
-
+      options: [],
       form: {
         id: 0,
         name: '',
         index: '',
         url: '',
+        sort: '',
         logo: '',
-        intro: ''
+        intro: '',
+        is_hot: 0,
+        is_show: 1
       },
       rules: {
         name: [
@@ -73,9 +103,19 @@ export default {
         ],
         index: [
           { required: true, message: '不能为空', trigger: ['blur', 'change'] },
+          { validator: validatePass, message: '请输入英文字母' },
           { max: 1, message: '长度1个字符' }
         ],
         intro: [
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+        ],
+        logo: [
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+        ],
+        is_hot: [
+          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+        ],
+        is_show: [
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }
         ]
       }
@@ -84,8 +124,21 @@ export default {
   methods: {
     init(data) {
       this.visible = true
+      this.initOptions()
       if (data) {
         this.form = { ...data }
+      }
+    },
+    initOptions() {
+      this.options = ('ABCDEFGHJKLMNOPQRSTWXYZ'.split('')).map(v => { return { value: v } })
+    },
+    querySearch(val, cb) {
+      const results = val ? this.options.filter(this.createFilter(val)) : this.options
+      cb(results)
+    },
+    createFilter(queryString) {
+      return (resultsArray) => {
+        return (resultsArray.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
       }
     },
     onFormSubmit() {
