@@ -1,7 +1,7 @@
 <template>
-  <el-dialog top="30px" width="1000px" append-to-body title="话题简介" :visible.sync="visible" :close-on-click-modal="false" :close-on-press-escape="false" @closed="onClose()">
+  <el-dialog top="30px" width="1000px" append-to-body title="资讯简介" :visible.sync="visible" :close-on-click-modal="false" :close-on-press-escape="false" @closed="onClose()">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-      <el-form-item label="话题简介" prop="info">
+      <el-form-item label="资讯简介" prop="info">
         <tinymce v-if="visible" v-model="form.info" :height="400" />
       </el-form-item>
     </el-form>

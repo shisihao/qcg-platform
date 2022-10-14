@@ -7,11 +7,18 @@ export function dataList(params) {
   })
 }
 
-// 添加
-export function addOrUpdate(data) {
-  return request.post('/topics', {
-    ...data
-  })
+// 添加 / 修改
+export function addOrUpdate({ id, ...data }) {
+  let method = 'POST'
+  let url = '/topics'
+
+  if (id > 0) {
+    method = 'PUT'
+    url += `/${id}`
+    data.id = id
+  }
+
+  return request({ url, method, data })
 }
 
 // 评论列表

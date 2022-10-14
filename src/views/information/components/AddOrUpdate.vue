@@ -22,29 +22,33 @@
           <el-input v-model="form.title" show-word-limit maxlength="48" placeholder="资讯标题" clearable />
         </el-form-item>
         <el-form-item label="资讯内容" prop="intro">
-          <el-link type="primary" :underline="false" @click="onTinymce(form)">
+          <el-input v-if="form.id && !form.is_rich" v-model="form.intro" show-word-limit clearable maxlength="1000" type="textarea" placeholder="话题简介" :rows="5" />
+          <el-link v-else type="primary" :underline="false" @click="onTinymce(form)">
             点击编辑
           </el-link>
         </el-form-item>
-        <el-form-item label="资讯类型">
+        <el-form-item label="资讯类型" prop="type">
           <el-radio-group v-model="form.type">
             <el-radio v-for="(item,index) in typeOptions" :key="index" :label="item.value">{{ item.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="发起用户">
-          <el-avatar icon="el-icon-user-solid" style="vertical-align: top;" :src="userInfo.avatar ? (domin + userInfo.avatar) : ''" />
-          <div style="display: inline-block;margin-left: 2px">
-            <div>
-              #{{ userInfo.id }}
-              <el-divider direction="vertical" />
-              {{ userInfo.name }}
-            </div>
-            <div>
-              {{ userInfo.phone }}
+        <el-form-item label="发起用户" prop="">
+          <div v-if="userInfo">
+            <el-avatar icon="el-icon-user-solid" style="vertical-align: top;" :src="userInfo.avatar ? (domin + userInfo.avatar) : ''" />
+            <div style="display: inline-block;margin-left: 2px">
+              <div>
+                #{{ userInfo.id }}
+                <el-divider direction="vertical" />
+                {{ userInfo.name }}
+              </div>
+              <div>
+                {{ userInfo.phone }}
+              </div>
             </div>
           </div>
+          <div v-else>账号未绑定，请先绑定</div>
         </el-form-item>
-        <el-form-item label="详情图">
+        <el-form-item label="详情图" prop="images">
           <div class="filter-list-box">
             <draggable v-model="form.images" v-bind="dragOptions" class="wrapper" @start="drag = true" @end="drag = false">
               <div v-for="(item, index) in form.images" :key="index" class="upload-images">
@@ -141,9 +145,6 @@ export default {
         ],
         intro: [
           { required: true, message: '不能为空', trigger: ['blur', 'change'] }
-        ],
-        images: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
         ]
       }
     }
@@ -163,6 +164,7 @@ export default {
       this.visible = true
       if (data) {
         this.form = JSON.parse(JSON.stringify(data))
+        this.form.images ??= []
       }
     },
     onFormSubmit() {

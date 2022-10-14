@@ -13,17 +13,15 @@
           v-model="form.start_time"
           type="datetime"
           placeholder="选择发售时间"
-          value-format="yyyy-MM-dd HH:mm:ss"
           :picker-options="disabledPickerOptions"
         />
       </el-form-item>
       <el-form-item label="藏品个数" prop="total">
-        <el-input v-model="form.total" clearable placeholder="藏品个数" oninput="value=value.replace(/[^\d]/g,'')" />
+        <el-input v-model="form.total" clearable placeholder="藏品个数" />
       </el-form-item>
       <el-form-item label="发售价格" prop="price">
-        <el-input-number v-model="form.price" :min="0" controls-position="right" placeholder="发售价格" />
+        <el-input-number v-model="form.price" :min="0" :precision="2" controls-position="right" placeholder="发售价格" />
       </el-form-item>
-
       <el-form-item label="藏品图片" prop="show_image">
         <custom-upload
           class-name="avatar-uploader"
@@ -33,14 +31,11 @@
           <img v-if="form.show_image" :src="domin + form.show_image" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon" />
         </custom-upload>
-        <div class="notice">
-          建议尺寸xxx
-        </div>
       </el-form-item>
       <el-form-item label="是否展示" prop="is_show">
         <el-radio-group v-model="form.is_show">
-          <el-radio :label="1">是</el-radio>
           <el-radio :label="0">否</el-radio>
+          <el-radio :label="1">是</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -56,10 +51,11 @@
 </template>
 
 <script>
-import { addOrUpdate } from '@/api/plans'
+import { addOrUpdate } from '@/api/platformPlans'
 import { disabledPickerOptions } from '@/utils/explain'
 import CustomUpload from '@/components/Upload/CustomUpload'
 import { DominKey, getToken } from '@/utils/auth'
+
 export default {
   name: 'AddOrUpdate',
   components: { CustomUpload },
@@ -68,14 +64,15 @@ export default {
       domin: getToken(DominKey),
       visible: false,
       btnLoading: false,
+      accountOptions: [],
       type: 0,
       form: {
         id: 0,
         name: '',
         price: '',
         total: '',
-        show_image: '',
         is_show: 1,
+        show_image: '',
         start_time: ''
       },
       disabledPickerOptions,
@@ -83,20 +80,20 @@ export default {
         name: [
           { required: true, message: '请输入名称', trigger: ['blur', 'change'] }
         ],
-        price: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
-        ],
-        total: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
-        ],
         show_image: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+          { required: true, message: '请输入名称', trigger: ['blur', 'change'] }
         ],
         is_show: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+          { required: true, message: '请输入名称', trigger: ['blur', 'change'] }
+        ],
+        price: [
+          { required: true, message: '请输入名称', trigger: ['blur', 'change'] }
+        ],
+        total: [
+          { required: true, message: '请输入名称', trigger: ['blur', 'change'] }
         ],
         start_time: [
-          { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+          { required: true, message: '请输入名称', trigger: ['blur', 'change'] }
         ]
       }
     }

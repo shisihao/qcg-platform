@@ -143,7 +143,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="intro"
+        prop="url"
         label="外链"
         header-align="center"
       />
@@ -357,6 +357,7 @@ export default {
         })
     },
     onAddOrUpdate(data) {
+      if (!JSON.parse(getToken('userInfo'))) return this.$message.warning('请联系管理员绑定APP账号')
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
         this.$refs.addOrUpdate && this.$refs.addOrUpdate.init(data)

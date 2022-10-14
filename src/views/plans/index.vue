@@ -6,7 +6,17 @@
           <el-input v-model="search.keywords" placeholder="请输入藏品名称" clearable @clear="getList(1)" @keyup.enter.native="getList(1)" />
         </el-form-item>
         <el-form-item label="时间">
-          <el-date-picker v-model="dateRangeValue" type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" :picker-options="pickerOptions" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right" @change="onChangeDateRange" />
+          <el-date-picker
+            v-model="dateRangeValue"
+            type="datetimerange"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            :picker-options="pickerOptions"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            align="right"
+            @change="onChangeDateRange"
+          />
         </el-form-item>
         <el-button icon="el-icon-search" @click="getList(1)">
           {{ $t('table.search') }}
@@ -17,27 +27,68 @@
       </el-form>
     </div>
 
-    <el-table v-loading="loading" border :data="list">
-      <el-table-column prop="id" label="ID" width="80" align="center" />
-      <el-table-column prop="name" label="藏品名称" align="center" />
-      <el-table-column prop="start_time" label="发售时间" align="center" />
-      <el-table-column prop="total" label="发售数量（个）" align="center" />
-      <el-table-column label="发售价格（元）" align="center" width="120" prop="total" />
-      <el-table-column width="120" label="藏品图片" header-align="center">
+    <el-table
+      v-loading="loading"
+      border
+      :data="list"
+    >
+      <el-table-column
+        prop="name"
+        label="藏品名称"
+        align="center"
+      />
+      <el-table-column
+        prop="start_time"
+        label="发售时间"
+        align="center"
+      />
+      <el-table-column
+        prop="total"
+        label="发售数量（个）"
+        align="center"
+      />
+      <el-table-column
+        label="发售价格（元）"
+        align="center"
+        width="120"
+        prop="price"
+      >
+        <template slot-scope="{row}">
+          ￥{{ row.price }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        width="120"
+        label="藏品图片"
+        header-align="center"
+      >
         <template slot-scope="{ row }">
-          <el-image class="image-item" fit="contain" :src="row.show_image && domin + row.show_image" :preview-src-list="[domin + row.show_image]">
+          <el-image
+            class="image-item"
+            fit="contain"
+            :src="row.show_image && domin + row.show_image"
+            :preview-src-list="[domin + row.show_image]"
+          >
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline" />
             </div>
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="是否展示" align="center" width="80">
+      <el-table-column
+        label="是否展示"
+        align="center"
+        width="80"
+      >
         <template slot-scope="{ row }">
           <el-switch v-model="row.is_show" :active-value="1" :inactive-value="0" @change="onChangeStatus(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="260" align="center">
+      <el-table-column
+        label="操作"
+        width="260"
+        align="center"
+      >
         <template slot-scope="{ row }">
           <el-button type="primary" @click="onAddOrUpdate(row)">编辑</el-button>
           <el-button type="danger" @click="onDelete(row)">删除</el-button>
@@ -47,12 +98,17 @@
     <pagination v-show="pages.total > 0" :total="pages.total" :page.sync="pages.current" :limit.sync="pages.limit" @pagination="getList()" />
 
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshList="getList()" />
+    <add-or-update
+      v-if="addOrUpdateVisible"
+      ref="addOrUpdate"
+      @refreshList="getList()"
+    />
   </div>
+
 </template>
 
 <script>
-import { dataList, addOrUpdate, deleteData } from '@/api/plans'
+import { dataList, addOrUpdate } from '@/api/platformPlans'
 import Pagination from '@/components/Pagination'
 import AddOrUpdate from './components/AddOrUpdate'
 import { whetherOptions } from '@/utils/explain'
@@ -99,7 +155,7 @@ export default {
           this.list = response.data.data
           this.pages.total = response.data.total
         })
-        .catch(() => {})
+        .catch(() => { })
         .finally(() => {
           this.loading = false
         })
@@ -124,19 +180,6 @@ export default {
         this.search.start_time = this.search.end_time = ''
         this.getList(1)
       }
-    },
-    onDelete(row) {
-      this.$confirm(`确定对[(#${row.id})]进行[删除]操作?`, '删除', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'error',
-        cancelButtonClass: 'btn-custom-cancel'
-      }).then(() => {
-        deleteData(row.id).then(({ msg = '删除成功' }) => {
-          this.$message.success(msg)
-          this.init()
-        })
-      })
     }
   }
 }
@@ -144,23 +187,23 @@ export default {
 
 <style lang="scss" scoped>
 .image-item {
-	flex-shrink: 0;
-	width: 100px;
-	height: 100px;
-	display: flex;
-	align-items: center;
-	img {
-		height: auto;
-	}
-	::v-deep .image-slot {
-		font-size: 30px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 100%;
-		height: 100%;
-		background: #f5f7fa;
-		color: #909399;
-	}
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  img {
+    height: auto;
+  }
+  ::v-deep .image-slot {
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: #f5f7fa;
+    color: #909399;
+  }
 }
 </style>

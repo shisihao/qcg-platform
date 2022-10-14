@@ -2,18 +2,21 @@
   <div>
     <el-dialog top="30px" :title="form.id ? $t('table.edit') : $t('table.add')" :visible.sync="visible" @closed="onClose()">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="发起用户">
-          <el-avatar icon="el-icon-user-solid" style="vertical-align: top;" :src="userInfo.avatar ? (domin + userInfo.avatar) : ''" />
-          <div style="display: inline-block;margin-left: 2px">
-            <div>
-              #{{ userInfo.id }}
-              <el-divider direction="vertical" />
-              {{ userInfo.name }}
-            </div>
-            <div>
-              {{ userInfo.phone }}
+        <el-form-item label="发起用户" prop="">
+          <div v-if="userInfo">
+            <el-avatar icon="el-icon-user-solid" style="vertical-align: top;" :src="userInfo.avatar ? (domin + userInfo.avatar) : ''" />
+            <div style="display: inline-block;margin-left: 2px">
+              <div>
+                #{{ userInfo.id }}
+                <el-divider direction="vertical" />
+                {{ userInfo.name }}
+              </div>
+              <div>
+                {{ userInfo.phone }}
+              </div>
             </div>
           </div>
+          <div v-else>账号未绑定，请先绑定</div>
         </el-form-item>
         <el-form-item label="观点内容" prop="intro">
           <el-input v-model="form.intro" show-word-limit clearable type="textarea" maxlength="1000" placeholder="观点内容" :rows="5" />
@@ -48,7 +51,7 @@
             </custom-upload>
           </div>
         </el-form-item>
-        <el-form-item v-else label-width="0px">
+        <el-form-item v-else label-width="0px" prop="topic_option">
           <div v-for="(item,index) in form.topic_option" :key="index" class="option-list">
             <span>选项{{ index+1 }}</span>
             <el-input v-model="form.topic_option[index]['title']" :disabled="!!form.id" class="option" placeholder="请输入选项内容" />
@@ -56,7 +59,7 @@
           </div>
           <el-button v-show="!form.id" class="option-btn el-icon-plus" @click="onAddOption"> 添加选项</el-button>
         </el-form-item>
-        <el-form-item label="外链">
+        <el-form-item label="外链" prop="url">
           <el-input v-model="form.url" placeholder="请输入链接" />
         </el-form-item>
       </el-form>
