@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { dataList, addOrUpdate } from '@/api/platformPlans'
+import { dataList, addOrUpdate, deleteData } from '@/api/plans'
 import Pagination from '@/components/Pagination'
 import AddOrUpdate from './components/AddOrUpdate'
 import { whetherOptions } from '@/utils/explain'
@@ -116,7 +116,7 @@ import { getToken, DominKey } from '@/utils/auth'
 import { pickerOptions } from '@/utils/explain'
 
 export default {
-  name: 'PlatformPlans',
+  name: 'Plans',
   components: { Pagination, AddOrUpdate },
   data() {
     return {
@@ -180,6 +180,19 @@ export default {
         this.search.start_time = this.search.end_time = ''
         this.getList(1)
       }
+    },
+    onDelete(row) {
+      this.$confirm(`确定对[(#${row.id})]进行[删除]操作?`, '删除', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error',
+        cancelButtonClass: 'btn-custom-cancel'
+      }).then(() => {
+        deleteData(row.id).then(({ msg = '删除成功' }) => {
+          this.$message.success(msg)
+          this.init()
+        })
+      })
     }
   }
 }

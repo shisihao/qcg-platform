@@ -11,6 +11,7 @@
       <el-form-item label="发售时间" prop="start_time">
         <el-date-picker
           v-model="form.start_time"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="datetime"
           placeholder="选择发售时间"
           :picker-options="disabledPickerOptions"
@@ -51,7 +52,7 @@
 </template>
 
 <script>
-import { addOrUpdate } from '@/api/platformPlans'
+import { addOrUpdate } from '@/api/plans'
 import { disabledPickerOptions } from '@/utils/explain'
 import CustomUpload from '@/components/Upload/CustomUpload'
 import { DominKey, getToken } from '@/utils/auth'
