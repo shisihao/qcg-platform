@@ -105,16 +105,16 @@ export const constantRoutes = [
           icon: ''
         }
       },
-      {
-        path: '/orders',
-        component: () => import('@/views/orders/index'),
-        children: [],
-        name: 'orders',
-        meta: {
-          title: '链上订单管理',
-          icon: ''
-        }
-      },
+      // {
+      //   path: '/orders',
+      //   component: () => import('@/views/orders/index'),
+      //   children: [],
+      //   name: 'orders',
+      //   meta: {
+      //     title: '链上订单管理',
+      //     icon: ''
+      //   }
+      // },
       {
         path: '/flash-order',
         component: () => import('@/views/flashOrder/index'),
@@ -177,16 +177,16 @@ export const constantRoutes = [
     path: '/good',
     component: Layout,
     children: [
-      {
-        path: '/goods',
-        component: () => import('@/views/goods/index'),
-        children: [],
-        name: 'goods',
-        meta: {
-          title: '链上藏品管理',
-          icon: ''
-        }
-      },
+      // {
+      //   path: '/goods',
+      //   component: () => import('@/views/goods/index'),
+      //   children: [],
+      //   name: 'goods',
+      //   meta: {
+      //     title: '链上藏品管理',
+      //     icon: ''
+      //   }
+      // },
       {
         path: '/goods-flash',
         component: () => import('@/views/goods-flash/index'),
@@ -197,16 +197,16 @@ export const constantRoutes = [
           icon: ''
         }
       },
-      {
-        path: '/lock',
-        component: () => import('@/views/configs/locksetting'),
-        children: [],
-        name: 'lock',
-        meta: {
-          title: '链上锁单设置',
-          icon: ''
-        }
-      },
+      // {
+      //   path: '/lock',
+      //   component: () => import('@/views/configs/locksetting'),
+      //   children: [],
+      //   name: 'lock',
+      //   meta: {
+      //     title: '链上锁单设置',
+      //     icon: ''
+      //   }
+      // },
       {
         path: '/lock-flash',
         component: () => import('@/views/configs/lock-flash'),

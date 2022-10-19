@@ -158,6 +158,24 @@
         prop="lock_price"
         width="100"
       />
+      <el-table-column label="寄售限价开关" align="center" width="100">
+        <template slot-scope="{row}">
+          <el-switch
+            v-model="row.price_range_status"
+            :active-value="1"
+            :inactive-value="0"
+            @change="onGoodprice(row)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="寄售限价区间" align="center" width="100">
+        <template slot-scope="{row}">
+          <ul class="data-info">
+            <li>低: &nbsp;{{ row.price_min }}</li>
+            <li>高: &nbsp;{{ row.price_max }}</li>
+          </ul>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         width="120"
@@ -311,8 +329,16 @@ export default {
         this.updateSwitch(row, row.lock_price, 0)
       }
     },
-    updateSwitch(row, value = row.lock_price, sales = row.sales_status) {
-      putGoodsDetail(row.id, { detail: row.detail, desc: row.desc, lock: row.lock, lock_price: value, sales_status: sales })
+
+    onGoodprice(row) {
+      if (row.price_range_status) {
+        this.onGoodDetail(row)
+      } else {
+        this.updateSwitch(row)
+      }
+    },
+    updateSwitch(row, value = row.lock_price, sales = row.sales_status, price_range_status = row.price_range_status) {
+      putGoodsDetail(row.id, { detail: row.detail, desc: row.desc, price_min: row.price_min, price_max: row.price_max, lock: row.lock, lock_price: value, sales_status: sales, price_range_status: price_range_status })
         .then(({ msg }) => {
           this.$message.success(msg)
           this.getList()

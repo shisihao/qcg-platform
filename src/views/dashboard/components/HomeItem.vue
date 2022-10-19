@@ -6,11 +6,11 @@
           <el-col :xs="24" :span="12">
             <div>
               <ul>
-                <li class="title">链上藏品总数量</li>
+                <li class="title">闪汇藏品总数量</li>
                 <li class="price"> <count-to :start-val="0" :end-val="homeData.chain_good_num" :duration="2600" class="card-panel-num" /></li>
               </ul>
               <ul>
-                <li class="title">上架中的链上藏品</li>
+                <li class="title">上架中的闪汇藏品</li>
                 <li class="price"> <count-to :start-val="0" :end-val="homeData.chain_consignment_num" :duration="2600" class="card-panel-num" /></li>
               </ul>
             </div>

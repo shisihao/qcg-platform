@@ -62,6 +62,14 @@
       <el-descriptions-item label="交易HASH" :span="3">
         {{ row.hash }}
       </el-descriptions-item>
+      <el-descriptions-item label="寄售限价开关" :span="3">
+        <el-radio-group v-model="row.price_range_status">
+          <el-radio v-for="(item,index) in whetherOptions.slice(1)" :key="index" :label="item.value">{{ item.label }}</el-radio>
+        </el-radio-group>
+      </el-descriptions-item>
+      <el-descriptions-item label="寄售限价区间" :span="3">
+        <el-input-number v-model="row.price_min" :precision="2" :step="0.1" :min="1" />-<el-input-number v-model="row.price_max" :precision="2" :step="0.1" :min="1" />
+      </el-descriptions-item>
       <el-descriptions-item label="是否允许寄售" :span="3">
         <el-radio-group v-model="row.sales_status">
           <el-radio v-for="(item,index) in whetherOptions.slice(1)" :key="index" :label="item.value">{{ item.label }}</el-radio>
@@ -160,7 +168,7 @@ export default {
     },
     onFormSubmit() {
       this.btnLoading = true
-      putGoodsDetail(this.row.id, { detail: this.row.detail, desc: this.row.desc, lock: this.row.lock, lock_price: this.row.lock_price, sales_status: this.row.sales_status })
+      putGoodsDetail(this.row.id, { detail: this.row.detail, desc: this.row.desc, lock: this.row.lock, lock_price: this.row.lock_price, sales_status: this.row.sales_status, price_min: this.row.price_min, price_max: this.row.price_max, price_range_status: this.row.price_range_status })
         .then(({ msg }) => {
           this.$message.success(msg)
           this.visible = false
