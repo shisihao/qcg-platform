@@ -147,6 +147,9 @@ export default {
     onFormSubmit() {
       this.$refs['form'].validate(valid => {
         if (valid) {
+          if (this.form.type === 1 && this.form.topic_option.length <= 1) {
+            return this.$message.warning('投票数量最少2个')
+          }
           this.btnLoading = true
           addOrUpdate(this.form)
             .then(({ msg }) => {
@@ -162,6 +165,8 @@ export default {
       })
     },
     onAddOption() {
+      const flag = this.form.topic_option.some(v => !v.title)
+      if (flag) return
       this.form.topic_option.push({
         title: ''
       })

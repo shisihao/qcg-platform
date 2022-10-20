@@ -35,21 +35,6 @@
       <el-form-item label="平台简介" prop="intro">
         <el-input v-model="form.intro" placeholder="请输入平台简介" type="textarea" :rows="4" />
       </el-form-item>
-      <el-form-item label="是否展示" prop="is_show">
-        <el-radio-group v-model="form.is_show">
-          <el-radio :label="0">否</el-radio>
-          <el-radio :label="1">是</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="是否热门" prop="is_hot">
-        <el-radio-group v-model="form.is_hot">
-          <el-radio :label="0">否</el-radio>
-          <el-radio :label="1">是</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="热门排序" prop="sort">
-        <el-input-number v-model="form.sort" :min="0" :precision="0" placeholder="请输入排序序号" controls-position="right" />
-      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" :loading="btnLoading" @click="onFormSubmit()">
@@ -88,11 +73,8 @@ export default {
         name: '',
         index: '',
         url: '',
-        sort: '',
         logo: '',
-        intro: '',
-        is_hot: 0,
-        is_show: 1
+        intro: ''
       },
       rules: {
         name: [
@@ -130,7 +112,7 @@ export default {
       }
     },
     initOptions() {
-      this.options = ('ABCDEFGHJKLMNOPQRSTWXYZ'.split('')).map(v => { return { value: v } })
+      this.options = ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')).map(v => { return { value: v } })
     },
     querySearch(val, cb) {
       const results = val ? this.options.filter(this.createFilter(val)) : this.options

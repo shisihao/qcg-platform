@@ -6,7 +6,7 @@
           <el-input v-model="search.keywords" placeholder="用户ID/昵称/手机号" clearable @clear="getList(1)" @keyup.enter.native="getList(1)" />
         </el-form-item>
         <el-form-item label="资讯标题">
-          <el-input v-model="search.title" placeholder="用户ID/昵称/手机号" clearable @clear="getList(1)" @keyup.enter.native="getList(1)" />
+          <el-input v-model="search.title" placeholder="请输入标题" clearable @clear="getList(1)" @keyup.enter.native="getList(1)" />
         </el-form-item>
         <el-form-item label="所属板块">
           <el-select v-model="search.type" placeholder="请选择" clearable @change="getList(1)">
