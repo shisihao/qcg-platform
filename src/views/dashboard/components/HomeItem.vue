@@ -7,22 +7,22 @@
             <div>
               <ul>
                 <li class="title">闪汇藏品总数量</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.chain_good_num" :duration="2600" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.chain_good_num" :duration="2600" class="card-panel-num" /></li>
               </ul>
               <ul>
                 <li class="title">上架中的闪汇藏品</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.chain_consignment_num" :duration="2600" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.chain_consignment_num" :duration="2600" class="card-panel-num" /></li>
               </ul>
             </div>
           </el-col>
           <el-col :xs="24" :span="12">
             <ul>
               <li class="title">集市藏品总数量</li>
-              <li class="price"> <count-to :start-val="0" :end-val="homeData.market_good_num" :duration="2600" class="card-panel-num" /></li>
+              <li class="price"> <count-to :start-val="0" :end-val="+homeData.market_good_num" :duration="2600" class="card-panel-num" /></li>
             </ul>
             <ul>
               <li class="title">上架中的集市藏品</li>
-              <li class="price"> <count-to :start-val="0" :end-val="homeData.market_consignment_num" :duration="2600" class="card-panel-num" /></li>
+              <li class="price"> <count-to :start-val="0" :end-val="+homeData.market_consignment_num" :duration="2600" class="card-panel-num" /></li>
             </ul>
           </el-col>
         </div>
@@ -33,11 +33,11 @@
             <div>
               <ul>
                 <li class="title">本月闪汇交易额</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.issuer_month_sell" :duration="2600" :decimals="2" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.issuer_month_sell" :duration="2600" :decimals="2" class="card-panel-num" /></li>
               </ul>
               <ul>
                 <li class="title">累计闪汇交易额</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.issuer_total_sell" :duration="2600" :decimals="2" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.issuer_total_sell" :duration="2600" :decimals="2" class="card-panel-num" /></li>
               </ul>
             </div>
           </el-col>
@@ -49,27 +49,27 @@
             <div>
               <ul>
                 <li class="title">本月集市寄售交易额</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.market_month_sell" :duration="2600" :decimals="2" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.market_month_sell" :duration="2600" :decimals="2" class="card-panel-num" /></li>
               </ul>
               <ul>
                 <li class="title">累计集市寄售交易额</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.market_total_sell" :duration="2600" :decimals="2" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.market_total_sell" :duration="2600" :decimals="2" class="card-panel-num" /></li>
               </ul>
             </div>
           </el-col>
         </div>
       </el-col>
-      <el-col :xs="24" :span="4" class="card-panel-col">
+      <el-col v-if="homeData.charge_fee" :xs="24" :span="4" class="card-panel-col">
         <div class="card-panel">
           <el-col :xs="24" :span="12">
             <div>
               <ul>
                 <li class="title">本月手续费奖励</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.charge_fee.month_fee" :decimals="4" :duration="2600" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.charge_fee.month_fee" :decimals="4" :duration="2600" class="card-panel-num" /></li>
               </ul>
               <ul>
                 <li class="title">累计手续费奖励</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.charge_fee.total_fee" :decimals="4" :duration="2600" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.charge_fee.total_fee" :decimals="4" :duration="2600" class="card-panel-num" /></li>
               </ul>
             </div>
           </el-col>
@@ -89,17 +89,17 @@
           </el-col>
         </div>
       </el-col>
-      <el-col :xs="24" :span="5" class="card-panel-col">
+      <el-col v-if="homeData.copyright_fee" :xs="24" :span="5" class="card-panel-col">
         <div class="card-panel">
           <el-col :xs="24" :span="12">
             <div>
               <ul>
                 <li class="title">本月版权费奖励</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.copyright_fee.month_fee" :decimals="4" :duration="2600" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.copyright_fee.month_fee" :decimals="4" :duration="2600" class="card-panel-num" /></li>
               </ul>
               <ul>
                 <li class="title">累计版权费奖励</li>
-                <li class="price"> <count-to :start-val="0" :end-val="homeData.copyright_fee.total_fee" :decimals="4" :duration="2600" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.copyright_fee.total_fee" :decimals="4" :duration="2600" class="card-panel-num" /></li>
               </ul>
             </div>
           </el-col>

@@ -218,7 +218,7 @@ export const constantRoutes = [
         }
       }
     ],
-    name: 'collection',
+    name: 'good',
     meta: {
       title: '藏品管理',
       icon: 'collection'
@@ -254,6 +254,58 @@ export const constantRoutes = [
       title: '账单管理',
       icon: 'btc'
     }
+  },
+  {
+    path: '/plan',
+    component: Layout,
+    name: 'plan',
+    meta: {
+      title: '社区管理',
+      icon: 'example'
+    },
+    children: [
+      {
+        path: '/plans',
+        component: () => import('@/views/plans/index'),
+        children: [],
+        name: 'plans',
+        meta: {
+          title: '发售计划管理',
+          icon: ''
+        }
+      },
+      {
+        path: '/topics',
+        component: () => import('@/views/topics/index'),
+        children: [],
+        name: 'topics',
+        meta: {
+          title: '观点管理',
+          icon: ''
+        }
+      },
+      {
+        path: '/information',
+        component: () => import('@/views/information/index'),
+        children: [],
+        name: 'home',
+        meta: {
+          title: '资讯管理',
+          icon: ''
+        }
+      },
+      {
+        path: '/home',
+        component: () => import('@/views/home/index'),
+        children: [],
+        name: 'home',
+        meta: {
+          title: '藏友之家管理',
+          icon: ''
+        }
+      }
+
+    ]
   }
 ]
 

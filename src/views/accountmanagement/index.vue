@@ -143,7 +143,7 @@
 import { pickerOptions, pages, statusAccount } from '@/utils/explain'
 import Pagination from '@/components/Pagination'
 import { DominKey, getToken } from '@/utils/auth'
-import { billsList,exportAccount } from '@/api/account'
+import { billsList, exportAccount } from '@/api/account'
 import AddOrUpdate from './components/AddOrUpdate'
 
 export default {
