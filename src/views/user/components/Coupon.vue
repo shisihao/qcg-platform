@@ -85,7 +85,7 @@
             >
               <template slot-scope="{row}">
                 <div v-if="row.transfer_time === null">空投</div>
-                <div v-else>转增</div>
+                <div v-else>转赠</div>
               </template>
             </el-table-column>
           </el-table>
