@@ -7,11 +7,11 @@
             <div>
               <ul>
                 <li class="title">闪汇藏品总数量</li>
-                <li class="price"> <count-to :start-val="0" :end-val="+homeData.chain_good_num" :duration="2600" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.issuer_good_num" :duration="2600" class="card-panel-num" /></li>
               </ul>
               <ul>
                 <li class="title">上架中的闪汇藏品</li>
-                <li class="price"> <count-to :start-val="0" :end-val="+homeData.chain_consignment_num" :duration="2600" class="card-panel-num" /></li>
+                <li class="price"> <count-to :start-val="0" :end-val="+homeData.issuer_consignment_num" :duration="2600" class="card-panel-num" /></li>
               </ul>
             </div>
           </el-col>
