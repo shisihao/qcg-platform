@@ -30,6 +30,15 @@
             @keyup.enter.native="getList(1)"
           />
         </el-form-item>
+        <el-form-item label="手机号">
+          <el-input
+              v-model="search.phone"
+              placeholder="手机号"
+              clearable
+              @clear="getList(1)"
+              @keyup.enter.native="getList(1)"
+          />
+        </el-form-item>
         <el-form-item label="时间">
           <el-date-picker
             v-model="dateRangeValue"
@@ -167,7 +176,7 @@
                         {{ row.consignment.user.name }}
                       </div>
                       <div>
-                        <!--                        {{ row.consignment.user.phone | cancelPhone }}-->
+                                                {{ row.consignment.user.phone  }}
                       </div>
                       <template v-if="row.status === 4">
                         <div v-show="row.intervene_user_id===row.consignment.user_id ">
@@ -199,7 +208,7 @@
                         {{ row.user.name }}
                       </div>
                       <div>
-                        <!--                        {{ row.user.phone | cancelPhone }}-->
+                                                {{ row.user.phone }}
                       </div>
                       <template v-if="row.status === 4">
                         <div v-show="row.intervene_user_id===row.user.id">
@@ -348,6 +357,7 @@ export default {
         [4, 0]
       ]),
       search: {
+        phone:'',
         keywords: '',
         status: '',
         hash: '',

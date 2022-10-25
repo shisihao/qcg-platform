@@ -76,7 +76,7 @@ export default {
         type: 'sales'
       },
       salesOptions: [
-        { label: '链上交易额', value: 'sales' },
+        { label: '闪汇交易额', value: 'sales' },
         { label: '集市交易额', value: 'ma_sales' },
         { label: '手续费奖励', value: 'charge_fee' },
         { label: '版权费奖励', value: 'copyright_fee' }
