@@ -51,7 +51,7 @@
       >
         <template slot-scope="{row}">
           <div>
-            {{ row.platform? row.platform.name:row.issuer.name}}
+            {{ row.platform? row.platform.name:row.issuer.name }}
           </div>
         </template>
       </el-table-column>
@@ -70,10 +70,10 @@
         align="center"
       />
       <el-table-column
-          label="订单类型"
-          width="180"
-          header-align="center"
-          align="center"
+        label="订单类型"
+        width="180"
+        header-align="center"
+        align="center"
       >
         <template slot-scope="{ row }">
           <div v-if="row.issuer">链上闪汇订单</div>
@@ -120,7 +120,7 @@ import { DominKey, getToken } from '@/utils/auth'
 import { exportService, serviceList } from '@/api/order'
 
 export default {
-  name: 'ServiceCharge',
+  name: 'Copyrightfee',
   components: {
     Pagination
   },

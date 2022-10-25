@@ -147,7 +147,7 @@ import { billsList, exportAccount } from '@/api/account'
 import AddOrUpdate from './components/AddOrUpdate'
 
 export default {
-  name: 'ServiceCharge',
+  name: 'Accountmanagement',
   components: {
     Pagination,
     AddOrUpdate
