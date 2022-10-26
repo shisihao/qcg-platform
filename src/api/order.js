@@ -7,6 +7,13 @@ export function dataList(params) {
   })
 }
 
+// 集市订单导出订单
+export function exportOrder(params) {
+  return request.get('/orders/export', {
+    params
+  })
+}
+
 // 平台介入
 export function interveneOrder({ id, ...data }) {
   return request.put(`/order/${id}/intervene`, {

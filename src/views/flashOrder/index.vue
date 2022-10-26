@@ -32,11 +32,11 @@
         </el-form-item>
         <el-form-item label="手机号">
           <el-input
-              v-model="search.phone"
-              placeholder="手机号"
-              clearable
-              @clear="getList(1)"
-              @keyup.enter.native="getList(1)"
+            v-model="search.phone"
+            placeholder="手机号"
+            clearable
+            @clear="getList(1)"
+            @keyup.enter.native="getList(1)"
           />
         </el-form-item>
         <el-form-item label="时间">
@@ -69,7 +69,9 @@
         <el-button icon="el-icon-search" @click="getList(1)">
           {{ $t('table.search') }}
         </el-button>
-
+        <el-button :loading="downloadLoading" type="success" icon="el-icon-document" @click="onHandleDownload">
+          {{ $t('table.export') }} Excel
+        </el-button>
       </el-form>
     </div>
 
@@ -126,8 +128,8 @@
               <div v-if="goods" class="info-wrapper">
                 <el-image
                   class="image-item"
-                  :src="Array.isArray(goods.images) && goods.images[0] &&  goods.images[0]"
-                  :preview-src-list="[Array.isArray(goods.images) && goods.images[0] &&  goods.images[0]]"
+                  :src="Array.isArray(goods.images) && goods.images[0] && goods.images[0]"
+                  :preview-src-list="[Array.isArray(goods.images) && goods.images[0] && goods.images[0]]"
                 >
                   <div slot="error" class="image-slot">
                     <i class="el-icon-picture-outline" />
@@ -176,7 +178,7 @@
                         {{ row.consignment.user.name }}
                       </div>
                       <div>
-                                                {{ row.consignment.user.phone  }}
+                        {{ row.consignment.user.phone }}
                       </div>
                       <template v-if="row.status === 4">
                         <div v-show="row.intervene_user_id===row.consignment.user_id ">
@@ -208,7 +210,7 @@
                         {{ row.user.name }}
                       </div>
                       <div>
-                                                {{ row.user.phone }}
+                        {{ row.user.phone }}
                       </div>
                       <template v-if="row.status === 4">
                         <div v-show="row.intervene_user_id===row.user.id">
@@ -338,7 +340,7 @@ import PlatformRemind from './components/PlatformRemind'
 import PlatformIntervene from './components/PlatformIntervene'
 import OrderDetail from './components/OrderDetail'
 import { getToken, DominKey } from '@/utils/auth'
-import { dataList } from '@/api/order'
+import { dataList, exportOrder } from '@/api/order'
 import { payOptions, pickerOptions, orderStatusOptions, pages } from '@/utils/explain'
 
 export default {
@@ -357,7 +359,7 @@ export default {
         [4, 0]
       ]),
       search: {
-        phone:'',
+        phone: '',
         keywords: '',
         status: '',
         hash: '',
@@ -408,7 +410,17 @@ export default {
         this.getList(1)
       }
     },
-
+    onHandleDownload() {
+      this.downloadLoading = true
+      exportOrder(this.search)
+        .then((response) => {
+          location.href = '/' + response.data.filename
+        })
+        .catch(() => { })
+        .finally(() => {
+          this.downloadLoading = false
+        })
+    },
     onRemind(data) {
       this.platformRemindVisible = true
       this.$nextTick(() => {

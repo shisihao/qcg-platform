@@ -52,7 +52,9 @@
         <el-button icon="el-icon-search" @click="getList(1)">
           {{ $t('table.search') }}
         </el-button>
-
+        <el-button :loading="downloadLoading" type="success" icon="el-icon-document" @click="onHandleDownload">
+          {{ $t('table.export') }} Excel
+        </el-button>
       </el-form>
     </div>
 
@@ -166,7 +168,7 @@
                         {{ row.consignment.user.name }}
                       </div>
                       <div>
-<!--                        {{ row.consignment.user.phone | cancelPhone }}-->
+                        <!--                        {{ row.consignment.user.phone | cancelPhone }}-->
                       </div>
                       <template v-if="row.status === 4">
                         <div v-show="row.intervene_user_id===row.consignment.user_id">
@@ -198,7 +200,7 @@
                         {{ row.user.name }}
                       </div>
                       <div>
-<!--                        {{ row.user.phone | cancelPhone }}-->
+                        <!--                        {{ row.user.phone | cancelPhone }}-->
                       </div>
                       <template v-if="row.status === 4">
                         <div v-show="row.intervene_user_id===row.user.id">
@@ -277,8 +279,8 @@
         </el-table-column>
         <el-table-column width="200" fixed="right" align="center">
           <template slot-scope="{ row }">
-<!--            <el-button v-show="[5].includes(row.status)" type="primary" @click="onIntervene(row)">平台介入</el-button>-->
-<!--            <el-button v-show="[1,2].includes(row.status)" type="warning" @click="onRemind(row)">提醒</el-button>-->
+            <!--            <el-button v-show="[5].includes(row.status)" type="primary" @click="onIntervene(row)">平台介入</el-button>-->
+            <!--            <el-button v-show="[1,2].includes(row.status)" type="warning" @click="onRemind(row)">提醒</el-button>-->
             <el-button type="primary" plain @click="onDetail(row)">订单详情</el-button>
           </template>
         </el-table-column>
@@ -317,7 +319,7 @@ import PlatformRemind from './components/PlatformRemind'
 import PlatformIntervene from './components/PlatformIntervene'
 import OrderDetail from './components/OrderDetail'
 import { getToken, DominKey } from '@/utils/auth'
-import { dataList } from '@/api/marketorder'
+import { dataList, exportOrder } from '@/api/marketorder'
 import { payOptions, pickerOptions, marketorderStatusOptions, pages } from '@/utils/explain'
 
 export default {
@@ -375,7 +377,17 @@ export default {
           this.loading = false
         })
     },
-
+    onHandleDownload() {
+      this.downloadLoading = true
+      exportOrder(this.search)
+        .then((response) => {
+          location.href = '/' + response.data.filename
+        })
+        .catch(() => { })
+        .finally(() => {
+          this.downloadLoading = false
+        })
+    },
     onChangeDateRange(value) {
       if (Array.isArray(value)) {
         this.search.start_time = value[0]

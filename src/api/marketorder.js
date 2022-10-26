@@ -9,7 +9,7 @@ export function dataList(params) {
 
 // 集市订单导出订单
 export function exportOrder(params) {
-  return request.get('ma/orders/export', {
+  return request.get('/ma/orders/export', {
     params
   })
 }
