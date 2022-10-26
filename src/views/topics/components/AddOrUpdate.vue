@@ -142,6 +142,7 @@ export default {
       this.visible = true
       if (data) {
         this.form = JSON.parse(JSON.stringify(data))
+        this.form.images ??= []
       }
     },
     onFormSubmit() {
