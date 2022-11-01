@@ -96,7 +96,7 @@ export default {
       visible: false,
       btnLoading: false,
       domin: getToken(DominKey),
-      userInfo: JSON.parse(getToken('userInfo')),
+      userInfo: JSON.parse(getToken('userInfo')).user,
       imageViewer: false,
       imageViewerList: [],
       currentName: '',

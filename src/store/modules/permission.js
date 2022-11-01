@@ -1,5 +1,5 @@
 import { asyncRoutes, constantRoutes } from '@/router'
-
+import { getToken } from '@/utils/auth'
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -41,7 +41,14 @@ const state = {
 const mutations = {
   SET_ROUTES: (state, routes) => {
     state.addRoutes = routes
-    state.routes = constantRoutes.concat(routes)
+    if (!JSON.parse(getToken('userInfo')).issuer_id) {
+      const newConstantRoutes = constantRoutes.filter(v => {
+        if (v.path !== '/ads') return v
+      })
+      state.routes = newConstantRoutes.concat(routes)
+    } else {
+      state.routes = constantRoutes.concat(routes)
+    }
   }
 }
 

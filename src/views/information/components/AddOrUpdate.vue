@@ -109,7 +109,7 @@ export default {
       userLoading: false,
       editTinymceVisible: false,
       domin: getToken(DominKey),
-      userInfo: JSON.parse(getToken('userInfo')),
+      userInfo: JSON.parse(getToken('userInfo')).user,
       imageViewer: false,
       imageViewerList: [],
       typeOptions: [

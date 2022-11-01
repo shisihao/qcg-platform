@@ -224,6 +224,19 @@ export const constantRoutes = [
     }
   },
   {
+    path: '/ads',
+    component: Layout,
+    redirect: '/ad',
+    children: [
+      {
+        path: 'ad',
+        component: () => import('@/views/ad/index'),
+        name: 'ad',
+        meta: { title: '广告管理', icon: 'ad', affix: true }
+      }
+    ]
+  },
+  {
     path: '/plan',
     component: Layout,
     name: 'plan',
