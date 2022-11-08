@@ -3,7 +3,7 @@
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item prop="info">
         <!--        <tinymce v-if="visible" v-model="form.info" :height="400" />-->
-        <p v-html="form.info">{{ form.info }}</p>
+        <p v-html="form.info" />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import Tinymce from '@/components/Tinymce'
+// import Tinymce from '@/components/Tinymce'
 
 export default {
   name: 'EditTinymce',
-  components: { Tinymce },
+  // components: { Tinymce },
   data() {
     return {
       visible: false,

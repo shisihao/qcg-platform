@@ -2,9 +2,6 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form :inline="true" :model="search">
-        <el-form-item label="名称">
-          <el-input v-model="search.name" placeholder="名称" clearable @clear="getList(1)" @keyup.enter.native="getList(1)" />
-        </el-form-item>
         <el-form-item label="电话">
           <el-input v-model="search.phone" placeholder="电话" clearable @clear="getList(1)" @keyup.enter.native="getList(1)" />
         </el-form-item>
@@ -31,12 +28,6 @@
       highlight-current-row
       :data="list"
     >
-      <el-table-column
-        prop="name"
-        label="名称"
-        width="180"
-        align="center"
-      />
       <el-table-column
         prop="phone"
         label="电话"
@@ -105,7 +96,6 @@ export default {
     return {
       list: [],
       search: {
-        name: '',
         phone: '',
         email: '',
         state: ''

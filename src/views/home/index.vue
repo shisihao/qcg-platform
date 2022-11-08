@@ -13,7 +13,10 @@
       <el-descriptions-item label="链接">{{ data.url }}</el-descriptions-item>
       <el-descriptions-item label="平台简介">{{ data.intro }}</el-descriptions-item>
     </el-descriptions>
-    <el-button type="primary" style="margin-top:10px" @click="onAddOrUpdate(data)">编辑</el-button>
+
+    <el-link v-else type="warning" :underline="false" style="display:block">暂无信息，请点击添加</el-link>
+
+    <el-button type="primary" style="margin-top:10px" @click="onAddOrUpdate(data)">{{ data.id?'编辑':'添加' }}</el-button>
 
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshList="getList()" />
   </div>

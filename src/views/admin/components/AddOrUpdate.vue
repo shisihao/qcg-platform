@@ -1,10 +1,7 @@
 
 <template>
-  <el-dialog :title="form.id ? $t('table.edit') : $t('table.add') " :visible.sync="visible" @closed="onClose()">
-    <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-      <el-form-item label="名称" prop="name">
-        <el-input v-model="form.name" placeholder="名称" clearable />
-      </el-form-item>
+  <el-dialog :title="form.id ? $t('table.edit') : $t('table.add') " :close-on-click-modal="false" :visible.sync="visible" @closed="onClose()">
+    <el-form ref="form" :model="form" :rules="rules" label-width="140px">
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="form.email" placeholder="邮箱" clearable />
       </el-form-item>
@@ -12,10 +9,13 @@
         <el-input v-model="form.phone" placeholder="手机号" maxlength="11" clearable />
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input v-model="form.password" type="password" placeholder="密码" clearable />
+        <el-input v-model="form.password" type="password" placeholder="密码" clearable autocomplete />
       </el-form-item>
       <el-form-item label="确认密码" prop="confirmPassword">
-        <el-input v-model="form.confirmPassword" type="password" placeholder="确认密码" clearable />
+        <el-input v-model="form.confirmPassword" type="password" placeholder="确认密码" clearable autocomplete />
+      </el-form-item>
+      <el-form-item label="奇藏果APP账号绑定" prop="app_account">
+        <el-input v-model="form.app_account" :disabled="!!form.id&&!!form.old_app_account" placeholder="请输入" autocomplete />
       </el-form-item>
       <el-form-item label="角色" prop="role">
         <el-select v-model="form.role" placeholder="请选择">
@@ -64,7 +64,7 @@ export default {
       }
     }
     const validatePhone = (rule, value, callback) => {
-      if (!validPhone(value)) {
+      if (value && !validPhone(value)) {
         callback(new Error('手机号格式错误'))
       } else {
         callback()
@@ -91,10 +91,10 @@ export default {
       btnLoading: false,
       form: {
         id: 0,
-        name: '',
         phone: '',
         email: '',
         password: '',
+        app_account: '',
         confirmPassword: '',
         state: 0,
         role: '',
@@ -122,6 +122,9 @@ export default {
         ],
         role: [
           { required: true, message: '请选择角色', trigger: ['blur', 'change'] }
+        ],
+        app_account: [
+          { validator: validatePhone, trigger: ['blur', 'change'] }
         ]
       }
     }
@@ -136,6 +139,7 @@ export default {
             this.form[v] = data[v]
           }
         })
+        this.form.old_app_account = this.form.app_account = data.user ? data.user.app_account : ''
         this.getAdminItem(data)
       }
     },
