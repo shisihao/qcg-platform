@@ -144,7 +144,6 @@ export default {
       this.$reset()
     },
     handleAvatarSuccess(response, file) {
-      console.log(response)
       this.form.logo = response.name
     },
     beforeAvatarUpload(file, cb) {

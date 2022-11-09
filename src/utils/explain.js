@@ -101,6 +101,11 @@ export const payTypeOptions = [
   { label: '人民币', value: 'cny' }
 ]
 
+export const goodsTypeOptions = [
+  { label: '藏品', value: 'goods', type: 'primary' },
+  { label: '盲盒', value: 'box', type: 'danger' }
+]
+
 export const disabledPickerOptions = {
   disabledDate(time) {
     return time.getTime() < Date.now() - 8.64e7

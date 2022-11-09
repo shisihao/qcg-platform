@@ -1,8 +1,8 @@
 <template>
-  <el-dialog title="藏品详情" width="1000px" :visible.sync="visible" @closed="onClose()">
-    <el-descriptions size="medium" title="藏品">
-      <el-descriptions-item label="藏品" :span="3">
-        <div class="good-img">
+  <el-dialog :title="`${row.type==='goods'?'藏品':'盲盒'}详情`" width="1000px" :visible.sync="visible" @closed="onClose()">
+    <el-descriptions size="medium">
+      <el-descriptions-item :label="row.type==='goods'?'藏品':'盲盒'" :span="3">
+        <div v-if="row.type==='goods'" class="good-img">
           <el-image
             v-for="(item, index) in row.goods.images"
             :key="index"
@@ -12,27 +12,39 @@
             @click="onPicturePreview(row.goods.images, index)"
           />
         </div>
+        <div v-else class="good-img">
+          <el-image
+            v-for="(item, index) in row.box.images"
+            :key="index"
+            class="image-item"
+            fit="contain"
+            :src="item"
+            @click="onPicturePreview(row.box.images, index)"
+          />
+        </div>
       </el-descriptions-item>
       <el-descriptions-item label="名称" :span="3">
-        {{ row.goods.name }}
+        {{ row.type==='goods'?row.goods.name:row.box.name }}
       </el-descriptions-item>
-      <el-descriptions-item label="编号">
-        {{ row.goods.serial }}
-      </el-descriptions-item>
-      <el-descriptions-item label="铸造总数">
-        {{ row.goods.cast_goods_stock }}
-      </el-descriptions-item>
+      <div v-if="row.type==='goods'">
+        <el-descriptions-item label="编号">
+          {{ row.goods.serial }}
+        </el-descriptions-item>
+        <el-descriptions-item label="铸造总数">
+          {{ row.goods.cast_goods_stock }}
+        </el-descriptions-item>
+      </div>
       <el-descriptions-item label="所属平台" :span="2">
         <el-image
           class="icon-logo"
           fit="cover"
-          :src="row.goods.platform_info && row.goods.platform_info.icon && domin + row.goods.platform_info.icon"
+          :src="row.issuer.image&& domin + row.issuer.image"
         >
           <div slot="error" class="image-slot">
             <i class="el-icon-picture-outline" />
           </div>
         </el-image>
-        {{ row.goods.platform_info && row.goods.platform_info.name }}
+        {{ row.issuer.name }}
       </el-descriptions-item>
     </el-descriptions>
 
@@ -158,7 +170,7 @@
       <el-descriptions-item label="操作人" :span="3">
         {{ row.admin?row.admin.name : '-' }}
       </el-descriptions-item>
-      <el-descriptions-item label="交易HASH" :span="3">
+      <el-descriptions-item v-if="row.type==='goods'" label="交易HASH" :span="3">
         {{ row.hash || '-' }}
       </el-descriptions-item>
       <el-descriptions-item label="付款凭证" :span="3">
@@ -193,7 +205,7 @@
 <script>
 import { getToken, DominKey } from '@/utils/auth'
 import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
-import { whetherOptions, orderStatusOptions, payOptions } from '@/utils/explain'
+import { whetherOptions, orderStatusOptions, payOptions, goodsTypeOptions } from '@/utils/explain'
 
 export default {
   name: 'OrderDetail',
@@ -205,6 +217,7 @@ export default {
       whetherOptions,
       payOptions,
       orderStatusOptions,
+      goodsTypeOptions,
       depositOptions: [
         { label: '冻结', value: 0, type: 'danger' },
         { label: '退还', value: 1, type: '' },
@@ -216,8 +229,14 @@ export default {
       row: {
         pay_type: '',
         goods: {
-          images: [],
-          platform_info: {}
+          images: []
+        },
+        box: {
+          images: []
+        },
+        issuer: {
+          name: '',
+          image: ''
         },
         consignment: {
           pay_type: {},

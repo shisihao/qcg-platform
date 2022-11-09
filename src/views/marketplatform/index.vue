@@ -140,7 +140,6 @@ export default {
       if (page === 1) this.pages.current = page
       dataList({ page, ...this.search, limit: this.pages.limit })
         .then(response => {
-          console.log(response)
           this.list = response.data.data
           this.pages.total = response.data.total
         })

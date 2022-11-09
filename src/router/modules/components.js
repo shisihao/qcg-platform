@@ -13,6 +13,7 @@ export const localMap = {
   plans: () => import('@/views/plans/index'), // 发售计划
   flashorder: () => import('@/views/flash-order/index'), // 闪汇订单管理
   flashgoods: () => import('@/views/flash-goods/index'), // 闪汇藏品管理
+  flashbox: () => import('@/views/flash-box/index'), // 闪汇盲盒管理
   marketorder: () => import('@/views/marketorder/index'), // 集市订单管理
   marketplatform: () => import('@/views/marketplatform/index'), // 集市平台管理
   servicecharge: () => import('@/views/servicecharge/index'), // 手续费奖励明细

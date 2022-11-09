@@ -178,7 +178,6 @@ export default {
       this.menuVisible = false
     },
     onFormSubmit() {
-      console.log(this.form)
       this.$refs['form'].validate(valid => {
         if (valid) {
           this.btnLoading = true

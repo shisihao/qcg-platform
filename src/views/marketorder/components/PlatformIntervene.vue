@@ -150,7 +150,6 @@ export default {
 
   methods: {
     init(row) {
-      console.log(row)
       this.visible = true
       if (row) {
         this.form.id = row.id

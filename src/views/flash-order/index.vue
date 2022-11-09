@@ -2,10 +2,10 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form :inline="true" :model="search">
-        <el-form-item label="藏品名称">
+        <el-form-item label="藏品/盲盒名称">
           <el-input
             v-model="search.keywords"
-            placeholder="藏品名称"
+            placeholder="藏品/盲盒名称"
             clearable
             @clear="getList(1)"
             @keyup.enter.native="getList(1)"
@@ -38,6 +38,11 @@
             @clear="getList(1)"
             @keyup.enter.native="getList(1)"
           />
+        </el-form-item>
+        <el-form-item label="订单类型">
+          <el-select v-model="search.order_type" placeholder="请选择" clearable @change="getList(1)">
+            <el-option v-for="(item,index) in goodsTypeOptions" :key="index" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="时间">
           <el-date-picker
@@ -122,29 +127,39 @@
             <span>订单号: {{ item ? item.order_no : '-' }}</span>
             <el-divider direction="vertical" />
             <span>下单时间：{{ item.created_at }}</span>
+            <el-divider direction="vertical" />
+            <span>类型：<el-link
+              :underline="false"
+              style="font-size:12px;vertical-align: top;"
+              :type="item.type | paraphrase(goodsTypeOptions, 'value', 'type')"
+            >{{ item.type |
+              paraphrase(goodsTypeOptions)
+            }}</el-link>
+            </span>
           </template>
           <el-table-column min-width="240" header-align="center">
-            <template slot-scope="{ row: { goods },row }">
-              <div v-if="goods" class="info-wrapper">
+            <template slot-scope="{ row }">
+              <div class="info-wrapper">
                 <el-image
                   class="image-item"
-                  :src="Array.isArray(goods.images) && goods.images[0] && goods.images[0]"
-                  :preview-src-list="[Array.isArray(goods.images) && goods.images[0] && goods.images[0]]"
+                  :src="row.type === 'goods' ? (Array.isArray(row.goods.images) && row.goods.images[0] && row.goods.images[0]) : row.box.images[0]"
+                  :preview-src-list="[row.type === 'goods' ? (Array.isArray(row.goods.images) && row.goods.images[0] && row.goods.images[0]) : row.box.images[0]]"
                 >
                   <div slot="error" class="image-slot">
                     <i class="el-icon-picture-outline" />
                   </div>
                 </el-image>
                 <ul class="data-info">
-                  <li>
+                  <li v-if="row.type === 'goods'">
                     <div>编号：</div>
-                    <div>{{ goods.serial }}#{{ row.consignment.user_goods.num }}/{{ goods.cast_goods_stock }}</div>
+                    <div>{{ row.goods.serial }}#{{ row.consignment.user_goods.num }}/{{ row.goods.cast_goods_stock }}
+                    </div>
                   </li>
                   <li>
                     <div>名称：</div>
                     <el-tooltip popper-class="popover-box" placement="bottom-start" effect="light">
-                      <div slot="content">{{ goods.name }}</div>
-                      <div class="more-ellipsis-3">{{ goods.name }}</div>
+                      <div slot="content">{{ row.type === 'goods'?row.goods.name:row.box.name }}</div>
+                      <div class="more-ellipsis-3">{{ row.type === 'goods'?row.goods.name:row.box.name }}</div>
                     </el-tooltip>
                   </li>
                 </ul>
@@ -181,7 +196,7 @@
                         {{ row.consignment.user.phone }}
                       </div>
                       <template v-if="row.status === 4">
-                        <div v-show="row.intervene_user_id===row.consignment.user_id ">
+                        <div v-show="row.intervene_user_id === row.consignment.user_id">
                           <el-tag>申请介入</el-tag>
                         </div>
                       </template>
@@ -213,7 +228,7 @@
                         {{ row.user.phone }}
                       </div>
                       <template v-if="row.status === 4">
-                        <div v-show="row.intervene_user_id===row.user.id">
+                        <div v-show="row.intervene_user_id === row.user.id">
                           <el-tag>申请介入</el-tag>
                         </div>
                       </template>
@@ -228,7 +243,9 @@
           </el-table-column>
           <el-table-column width="160" header-align="center">
             <template slot-scope="{ row }">
-              <div>支付价格：<svg-icon icon-class="money" style="color: #e6a23c;" /> {{ row.cny_price || 0.0 }}</div>
+              <div>支付价格：
+                <svg-icon icon-class="money" style="color: #e6a23c;" /> {{ row.cny_price || 0.0 }}
+              </div>
               <div>
                 <el-popover placement="bottom-start" trigger="hover" popper-class="popover-box popover-top">
                   <div>
@@ -238,12 +255,18 @@
                     <div>{{ row.account_info.name }}</div>
                     <div>{{ row.account_info.account }}</div>
                     <div v-show="row.account_info.qr_code">
-                      <el-image class="img-item" :src="row.account_info.qr_code && domin + row.account_info.qr_code" :preview-src-list="[row.account_info.qr_code && domin + row.account_info.qr_code]" />
+                      <el-image
+                        class="img-item"
+                        :src="row.account_info.qr_code && domin + row.account_info.qr_code"
+                        :preview-src-list="[row.account_info.qr_code && domin + row.account_info.qr_code]"
+                      />
                     </div>
                     <div v-show="row.account_info.deposit_bank">{{ row.account_info.deposit_bank }}</div>
                   </div>
                   <div slot="reference" style="display: inline-block;">支付方式：
-                    <svg-icon :icon-class="row.pay_type" /> {{ row.pay_type | paraphrase(payOptions) }} <i class="el-icon-zoom-in" />
+                    <svg-icon :icon-class="row.pay_type" /> {{ row.pay_type | paraphrase(payOptions) }} <i
+                      class="el-icon-zoom-in"
+                    />
                   </div>
                 </el-popover>
               </div>
@@ -251,7 +274,7 @@
           </el-table-column>
           <el-table-column min-width="180" header-align="center">
             <template slot-scope="{ row }">
-              <div class="chain">
+              <div v-if="row.type==='goods'" class="chain">
                 <div class="chain-title">交易HASH：</div>
                 <div>{{ row.hash || '-' }}</div>
               </div>
@@ -260,7 +283,12 @@
           <el-table-column width="122" header-align="center">
             <template slot-scope="{ row }">
               <div v-if="row.credential">
-                <el-image class="img-item" fit="cover" :src="row.credential && domin + row.credential" :preview-src-list="[row.credential && domin + row.credential]" />
+                <el-image
+                  class="img-item"
+                  fit="cover"
+                  :src="row.credential && domin + row.credential"
+                  :preview-src-list="[row.credential && domin + row.credential]"
+                />
               </div>
               <div v-else>
                 -
@@ -269,7 +297,10 @@
           </el-table-column>
           <el-table-column width="90" align="center">
             <template slot-scope="{ row }">
-              <el-tag :effect="row.status === 4 ? 'plain' : 'light'" :type="row.status | paraphrase(orderStatusOptions, 'value', 'type')">
+              <el-tag
+                :effect="row.status === 4 ? 'plain' : 'light'"
+                :type="row.status | paraphrase(orderStatusOptions, 'value', 'type')"
+              >
                 {{ row.status | paraphrase(orderStatusOptions) }}
               </el-tag>
               <div v-if="row.admin">
@@ -315,21 +346,11 @@
       @pagination="getList()"
     />
     <!-- 弹窗, 新增 / 修改 -->
-    <order-detail
-      v-if="orderDetailVisible"
-      ref="orderDetail"
-    />
+    <order-detail v-if="orderDetailVisible" ref="orderDetail" />
 
-    <platform-remind
-      v-if="platformRemindVisible"
-      ref="platformRemind"
-    />
+    <platform-remind v-if="platformRemindVisible" ref="platformRemind" />
 
-    <platform-intervene
-      v-if="platformInterveneVisible"
-      ref="platformIntervene"
-      @refreshList="getList()"
-    />
+    <platform-intervene v-if="platformInterveneVisible" ref="platformIntervene" @refreshList="getList()" />
 
   </div>
 </template>
@@ -341,7 +362,7 @@ import PlatformIntervene from './components/PlatformIntervene'
 import OrderDetail from './components/OrderDetail'
 import { getToken, DominKey } from '@/utils/auth'
 import { dataList, exportOrder } from '@/api/order'
-import { payOptions, pickerOptions, orderStatusOptions, pages } from '@/utils/explain'
+import { payOptions, pickerOptions, orderStatusOptions, pages, goodsTypeOptions } from '@/utils/explain'
 
 export default {
   name: 'Orders',
@@ -353,6 +374,7 @@ export default {
       pickerOptions,
       payOptions,
       orderStatusOptions,
+      goodsTypeOptions,
       list: [],
       statusCount: new Map([
         [0, 0],
@@ -363,6 +385,7 @@ export default {
         keywords: '',
         status: '',
         hash: '',
+        order_type: '',
         start_time: '',
         end_time: '',
         type: 2
@@ -479,31 +502,37 @@ export default {
   padding: 0;
   line-height: 1.3;
   margin: 6px auto;
+
   +.el-divider {
     margin: 0 auto;
   }
+
   li {
     display: flex;
     align-items: center;
+
     div {
       line-height: 1.3;
     }
+
     div:nth-child(1) {
       flex-shrink: 0;
     }
   }
 }
 
-  .data-info {
-    padding: 0;
-    margin-left: 4px;
-    li {
-      display: flex;
-      div:nth-child(1) {
-        flex-shrink: 0;
-      }
+.data-info {
+  padding: 0;
+  margin-left: 4px;
+
+  li {
+    display: flex;
+
+    div:nth-child(1) {
+      flex-shrink: 0;
     }
   }
+}
 
 .icon-logo {
   width: 30px;

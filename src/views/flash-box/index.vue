@@ -52,36 +52,19 @@
         <template slot-scope="{ row }">
           <ul class="data-info">
             <li>
-              <div>编号：</div>
-              <div>{{ row.serial }}</div>
-            </li>
-            <li>
               <div>名称：</div>
               <el-tooltip popper-class="popover-box" placement="bottom-start" effect="light">
                 <div slot="content">{{ row.name }}</div>
                 <div class="ellipsis">{{ row.name }}</div>
               </el-tooltip>
             </li>
-          </ul>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="images"
-        label="藏品信息"
-        header-align="center"
-      >
-        <template slot-scope="{ row }">
-          <ul class="data-info">
             <li>
-              <div>铸造总数：</div>
-              <div>{{ row.cast_goods_stock }}</div>
+              <div>流通总数：</div>
+              <div>{{ row.circulate }}</div>
             </li>
             <li>
-              <div>3D：</div>
-              <div>
-                <el-link v-if="row.is_three" class="preview-btn" type="primary" :underline="false" @click="onPreview3d(row)">预览<i class="el-icon-view el-icon--right" /></el-link>
-                <span v-else :style="`color: ${ row.is_three ? '#409eff' : '' }`">{{ row.is_three | paraphrase(whetherOptions) }}</span>
-              </div>
+              <div>发行总数：</div>
+              <div>{{ row.total_stock }}</div>
             </li>
           </ul>
         </template>
@@ -126,7 +109,7 @@
             v-model="row.sales_status"
             :active-value="1"
             :inactive-value="0"
-            @change="onGoodSales(row)"
+            @change="onBoxSales(row)"
           />
         </template>
       </el-table-column>
@@ -136,7 +119,7 @@
             v-model="row.lock"
             :active-value="1"
             :inactive-value="0"
-            @change="onGoodLock(row)"
+            @change="onBoxLock(row)"
           />
         </template>
       </el-table-column>
@@ -152,7 +135,7 @@
             v-model="row.price_range_status"
             :active-value="1"
             :inactive-value="0"
-            @change="onGoodprice(row)"
+            @change="onBoxprice(row)"
           />
         </template>
       </el-table-column>
@@ -171,7 +154,7 @@
         fixed="right"
       >
         <template slot-scope="{ row }">
-          <el-button type="primary" plain @click="onGoodDetail(row)">查看详情</el-button>
+          <el-button type="primary" plain @click="onBoxDetail(row)">查看详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -184,14 +167,10 @@
       :url-list="imageViewerList"
     />
 
-    <good-detail
-      v-if="goodDetailVisible"
-      ref="goodDetail"
+    <box-detail
+      v-if="boxDetailVisible"
+      ref="boxDetail"
       @refreshList="getList()"
-    />
-
-    <preview-3d
-      ref="preview3d"
     />
 
   </div>
@@ -199,10 +178,9 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import GoodDetail from './components/GoodDetail'
-import Preview3d from './components/Preview3d'
+import BoxDetail from './components/BoxDetail'
 import { getToken, DominKey } from '@/utils/auth'
-import { dataList, putGoodsDetail } from '@/api/goods'
+import { dataList, putBoxDetail } from '@/api/flashbox'
 import { pages } from '@/utils/explain'
 import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
@@ -210,8 +188,8 @@ import 'swiper/swiper-bundle.css'
 import { whetherOptions } from '@/utils/explain'
 
 export default {
-  name: 'Goods',
-  components: { Pagination, ElImageViewer, Swiper, SwiperSlide, GoodDetail, Preview3d },
+  name: 'FlashBox',
+  components: { Pagination, ElImageViewer, Swiper, SwiperSlide, BoxDetail },
   data() {
     return {
       domin: getToken(DominKey),
@@ -233,7 +211,7 @@ export default {
       list: [],
       imageViewer: false,
       imageViewerList: [],
-      goodDetailVisible: false
+      boxDetailVisible: false
     }
   },
   computed: {
@@ -264,15 +242,10 @@ export default {
           this.loading = false
         })
     },
-    onGoodDetail(data) {
-      this.goodDetailVisible = true
+    onBoxDetail(data) {
+      this.boxDetailVisible = true
       this.$nextTick(() => {
-        this.$refs.goodDetail && this.$refs.goodDetail.init(data)
-      })
-    },
-    onPreview3d(data) {
-      this.$nextTick(() => {
-        this.$refs.preview3d && this.$refs.preview3d.init(data)
+        this.$refs.boxDetail && this.$refs.boxDetail.init(data)
       })
     },
     onPicturePreview(imgArr, index) {
@@ -292,7 +265,7 @@ export default {
     next(index) {
       this.swiper(index).slideNext()
     },
-    onGoodLock(row) {
+    onBoxLock(row) {
       if (row.lock) {
         this.$prompt('请输入自动锁单价格', '提示', {
           confirmButtonText: '确定',
@@ -308,7 +281,7 @@ export default {
         this.updateSwitch(row)
       }
     },
-    onGoodSales(row) {
+    onBoxSales(row) {
       if (row.sales_status) {
         this.updateSwitch(row, row.lock_price, 1)
       } else {
@@ -316,15 +289,15 @@ export default {
       }
     },
 
-    onGoodprice(row) {
+    onBoxprice(row) {
       if (row.price_range_status) {
-        this.onGoodDetail(row)
+        this.onBoxDetail(row)
       } else {
         this.updateSwitch(row)
       }
     },
     updateSwitch(row, value = row.lock_price, sales = row.sales_status, price_range_status = row.price_range_status) {
-      putGoodsDetail(row.id, { detail: row.detail, desc: row.desc, price_min: row.price_min, price_max: row.price_max, lock: row.lock, lock_price: value, sales_status: sales, price_range_status: price_range_status })
+      putBoxDetail(row.id, { detail: row.detail, desc: row.desc, price_min: row.price_min, price_max: row.price_max, lock: row.lock, lock_price: value, sales_status: sales, price_range_status: price_range_status })
         .then(({ msg }) => {
           this.$message.success(msg)
           this.getList()

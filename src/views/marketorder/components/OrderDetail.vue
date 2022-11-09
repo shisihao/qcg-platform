@@ -192,7 +192,6 @@ export default {
         return domin ? domin + v : this.domin + v
       })
       this.imageViewerList = currentArr
-      console.log(this.imageViewerList)
       this.imageViewer = true
     },
     closeViewer() {
