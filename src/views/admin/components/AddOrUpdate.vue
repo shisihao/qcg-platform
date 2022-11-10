@@ -14,9 +14,6 @@
       <el-form-item label="确认密码" prop="confirmPassword">
         <el-input v-model="form.confirmPassword" type="password" placeholder="确认密码" clearable autocomplete />
       </el-form-item>
-      <el-form-item label="奇藏果APP账号绑定" prop="app_account">
-        <el-input v-model="form.app_account" :disabled="!!form.id&&!!form.old_app_account" placeholder="请输入" autocomplete />
-      </el-form-item>
       <el-form-item label="角色" prop="role">
         <el-select v-model="form.role" placeholder="请选择">
           <el-option v-for="item in rolesOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -94,7 +91,6 @@ export default {
         phone: '',
         email: '',
         password: '',
-        app_account: '',
         confirmPassword: '',
         state: 0,
         role: '',
@@ -122,9 +118,6 @@ export default {
         ],
         role: [
           { required: true, message: '请选择角色', trigger: ['blur', 'change'] }
-        ],
-        app_account: [
-          { validator: validatePhone, trigger: ['blur', 'change'] }
         ]
       }
     }
@@ -139,7 +132,6 @@ export default {
             this.form[v] = data[v]
           }
         })
-        this.form.old_app_account = this.form.app_account = data.user ? data.user.app_account : ''
         this.getAdminItem(data)
       }
     },
